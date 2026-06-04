@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>稚光｜产品展示与 PRD 草案</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --bg: #fbfcfe;
+      --panel: #ffffff;
+      --green: #16a34a;
+      --blue: #2563eb;
+      --amber: #f59e0b;
+      --rose: #e11d48;
+      --violet: #7c3aed;
+      --shadow: 0 16px 42px rgba(23, 32, 51, .1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      background: rgba(255,255,255,.9);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 70% 30%, #fff 0 9%, transparent 10%),
+        linear-gradient(135deg, var(--green), var(--blue));
+      box-shadow: inset 0 -8px 18px rgba(0,0,0,.12);
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .pill-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: #eefdf3;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: grid;
+      grid-template-columns: minmax(320px, .95fr) minmax(360px, 1.05fr);
+      gap: 5vw;
+      align-items: center;
+      padding: 48px 5vw 68px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.7), rgba(251,252,254,1)),
+        radial-gradient(circle at 15% 10%, rgba(22,163,74,.12), transparent 34%),
+        radial-gradient(circle at 92% 18%, rgba(37,99,235,.12), transparent 30%);
+    }
+
+    .kicker {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 5vw, 70px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      margin-bottom: 20px;
+    }
+
+    .lead {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .phone-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 650px;
+    }
+
+    .phone {
+      width: min(365px, 82vw);
+      height: 720px;
+      border: 10px solid #111827;
+      border-radius: 44px;
+      background: #111827;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .screen {
+      height: 100%;
+      border-radius: 34px;
+      background: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-top {
+      padding: 18px 16px 12px;
+      border-bottom: 1px solid #eef0f2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search {
+      flex: 1;
+      height: 40px;
+      border-radius: 20px;
+      background: #f3f6f8;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--amber), var(--rose));
+    }
+
+    .app-body {
+      flex: 1;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .story-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .story {
+      height: 92px;
+      border-radius: 14px;
+      padding: 10px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: flex-end;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+    }
+
+    .story:nth-child(2) { background: linear-gradient(135deg, var(--rose), var(--amber)); }
+    .story:nth-child(3) { background: linear-gradient(135deg, var(--violet), var(--blue)); }
+
+    .month {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      margin: 12px 0 9px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .tile {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background-size: cover;
+    }
+
+    .tile:nth-child(1) { background: linear-gradient(135deg,#fde68a,#f97316); }
+    .tile:nth-child(2) { background: linear-gradient(135deg,#bfdbfe,#2563eb); }
+    .tile:nth-child(3) { background: linear-gradient(135deg,#bbf7d0,#16a34a); }
+    .tile:nth-child(4) { background: linear-gradient(135deg,#fecdd3,#e11d48); }
+    .tile:nth-child(5) { background: linear-gradient(135deg,#ddd6fe,#7c3aed); }
+    .tile:nth-child(6) { background: linear-gradient(135deg,#fef3c7,#84cc16); }
+    .tile:nth-child(7) { background: linear-gradient(135deg,#cffafe,#0891b2); }
+    .tile:nth-child(8) { background: linear-gradient(135deg,#fee2e2,#fb7185); }
+    .tile:nth-child(9) { background: linear-gradient(135deg,#dcfce7,#15803d); }
+
+    .tabbar {
+      height: 64px;
+      border-top: 1px solid #eef0f2;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      place-items: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .tabbar .active {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .float {
+      position: absolute;
+      max-width: 210px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .float strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .float.one { left: 0; top: 92px; }
+    .float.two { right: 0; bottom: 132px; }
+
+    .band {
+      padding: 76px 5vw;
+    }
+
+    .band.white {
+      background: #fff;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .head {
+      max-width: 850px;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 3.7vw, 44px);
+      line-height: 1.16;
+      letter-spacing: 0;
+      margin-bottom: 12px;
+    }
+
+    .head p {
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .difference {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .compare-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .compare-card.focus {
+      border-color: #86efac;
+      box-shadow: 0 16px 34px rgba(22, 163, 74, .12);
+    }
+
+    .compare-card h3 {
+      margin-bottom: 16px;
+      font-size: 22px;
+    }
+
+    .compare-card ul {
+      display: grid;
+      gap: 12px;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .signature-demo {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eef0f2;
+    }
+
+    .score-row:last-child {
+      border-bottom: 0;
+    }
+
+    .thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+    }
+
+    .score-row:nth-child(2) .thumb { background: linear-gradient(135deg, var(--amber), var(--rose)); }
+    .score-row:nth-child(3) .thumb { background: linear-gradient(135deg, var(--violet), var(--blue)); }
+    .score-row:nth-child(4) .thumb { background: linear-gradient(135deg, #94a3b8, #475569); }
+
+    .score-row h4 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .score-row p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .score {
+      min-width: 54px;
+      text-align: right;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .timeline-demo {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .milestone {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .milestone:before {
+      content: "";
+      position: absolute;
+      left: 17px;
+      top: 36px;
+      bottom: 0;
+      width: 2px;
+      background: #dcfce7;
+    }
+
+    .milestone:last-child {
+      padding-bottom: 0;
+    }
+
+    .milestone:last-child:before {
+      display: none;
+    }
+
+    .milestone .num {
+      background: #dcfce7;
+    }
+
+    .milestone h4 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .milestone p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .card {
+      min-height: 218px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .card h3,
+    .logic h3,
+    .doc-block h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p,
+    .step p,
+    .logic p,
+    .doc-block p,
+    .doc-block li {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .flow-tab {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      padding: 9px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .flow-tab.active {
+      background: #dcfce7;
+      border-color: #bbf7d0;
+      color: #15803d;
+    }
+
+    .panel {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid #eef0f2;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e8f5ee;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .logic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .logic {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .state {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 26px;
+    }
+
+    .toc {
+      position: sticky;
+      top: 86px;
+      align-self: start;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .toc a {
+      display: block;
+      padding: 13px 16px;
+      border-bottom: 1px solid #eef0f2;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toc a:last-child {
+      border-bottom: 0;
+    }
+
+    .doc {
+      display: grid;
+      gap: 18px;
+    }
+
+    .doc-block {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .doc-block ul {
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .metric-item strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .metric-item span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 36px 5vw;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      background: #fff;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .split,
+      .doc-layout,
+      .difference,
+      .signature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards,
+      .logic-grid,
+      .metric {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .float {
+        display: none;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        height: auto;
+        min-height: 64px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 18px;
+      }
+
+      .links {
+        width: 100%;
+        overflow-x: auto;
+        gap: 16px;
+        padding-bottom: 4px;
+      }
+
+      .hero,
+      .band {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .phone-wrap {
+        min-height: auto;
+      }
+
+      .phone {
+        height: 640px;
+      }
+
+      .cards,
+      .logic-grid,
+      .metric {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#">
+      <span class="mark" aria-hidden="true"></span>
+      稚光
+    </a>
+    <nav class="links">
+      <a href="#map">能力地图</a>
+      <a href="#difference">差异化</a>
+      <a href="#signature">独有特色</a>
+      <a href="#flows">用户流程</a>
+      <a href="#logic">交互逻辑</a>
+      <a href="#prd">PRD 草案</a>
+      <a href="#metrics">指标</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="kicker">Zhiguang Album Product Showcase</div>
+        <h1>不是云相册，是宝宝家庭照片的 AI 精选师</h1>
+        <div class="pill-line">
+          <span class="pill">本地优先</span>
+          <span class="pill">宝宝成长节点</span>
+          <span class="pill">自动挑好照片</span>
+          <span class="pill">家庭私密共享</span>
+        </div>
+        <p class="lead">
+          稚光不做“大而全的云端照片仓库”。它专注一个高频痛点：父母手机里有几万张照片，
+          真正值得保存、发给家人、做成成长记录的只有一小部分。App 自动识别宝宝、表情、清晰度、重复连拍和成长节点，
+          把混乱相册整理成“第一次抬头、第一次走路、生日、亲子旅行”等可编辑的家庭记忆。
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="#prd">查看 PRD 草案</a>
+          <a class="btn" href="#flows">查看核心流程</a>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="float one"><strong>差异点 1</strong>不是备份全部照片，而是先帮你挑出最值得留下的 20 张。</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="app-top">
+              <span class="mark" aria-hidden="true"></span>
+              <div class="search">搜索宝宝、生日、旅行、地点</div>
+              <div class="avatar"></div>
+            </div>
+            <div class="app-body">
+              <div class="story-row">
+                <div class="story">本周宝宝 Top 20</div>
+                <div class="story">第一次走路</div>
+                <div class="story">给爷爷奶奶</div>
+              </div>
+              <div class="month">2026 年 6 月</div>
+              <div class="photo-grid">
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+              </div>
+              <div class="month">成长节点相册</div>
+              <div class="story-row">
+                <div class="story">0-3 月</div>
+                <div class="story">100 天</div>
+                <div class="story">生日合集</div>
+              </div>
+            </div>
+            <div class="tabbar">
+              <div class="active">首页</div>
+              <div>相册</div>
+              <div>整理</div>
+              <div>家庭</div>
+              <div>我的</div>
+            </div>
+          </div>
+        </div>
+        <div class="float two"><strong>差异点 2</strong>围绕宝宝年龄和家庭关系组织照片，不是简单按日期堆叠。</div>
+      </div>
+    </section>
+
+    <section id="difference" class="band">
+      <div class="head">
+        <h2>差异化定位</h2>
+        <p>Google 相册解决“所有照片在哪里”的问题；稚光解决“哪些照片值得留下、怎么变成家庭记忆”的问题。</p>
+      </div>
+      <div class="difference">
+        <article class="compare-card">
+          <h3>通用云相册</h3>
+          <ul>
+            <li>核心价值是备份、同步、跨设备访问和通用搜索。</li>
+            <li>默认承载全部照片，照片越多，用户仍然需要自己筛选。</li>
+            <li>按时间、地点、人物聚合，缺少宝宝成长语义。</li>
+            <li>分享偏通用链接或共享相册，不针对家庭角色设计。</li>
+            <li>更像照片仓库，重点是“存得住、找得到”。</li>
+          </ul>
+        </article>
+        <article class="compare-card focus">
+          <h3>稚光</h3>
+          <ul>
+            <li>核心价值是 AI 精选、成长节点成册、家庭私密分发。</li>
+            <li>默认先从海量照片中挑出高质量、有意义的少数照片。</li>
+            <li>围绕宝宝月龄、第一次、生日、亲子旅行、家人关系组织内容。</li>
+            <li>家庭空间按爸爸妈妈、爷爷奶奶、亲友设置不同权限。</li>
+            <li>更像家庭照片助理，重点是“挑得好、讲得清、分享得安心”。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="signature" class="band white">
+      <div class="head">
+        <h2>独有特色演示</h2>
+        <p>稚光必须把“为什么推荐这张照片”和“这张照片属于哪个成长故事”讲清楚，这是它和普通相册 App 的核心差异。</p>
+      </div>
+      <div class="signature-grid">
+        <div class="signature-demo">
+          <h3 style="margin-bottom:14px">宝宝精选评分</h3>
+          <div class="score-row">
+            <div class="thumb"></div>
+            <div><h4>笑脸清晰，主体完整</h4><p>适合放入“本周宝宝 Top 20”和家庭分享。</p></div>
+            <div class="score">96</div>
+          </div>
+          <div class="score-row">
+            <div class="thumb"></div>
+            <div><h4>生日蛋糕 + 家庭合影</h4><p>自动归入“1 岁生日”，推荐设为封面。</p></div>
+            <div class="score">93</div>
+          </div>
+          <div class="score-row">
+            <div class="thumb"></div>
+            <div><h4>第一次独立站立</h4><p>命中成长节点，建议加入“第一次”相册。</p></div>
+            <div class="score">91</div>
+          </div>
+          <div class="score-row">
+            <div class="thumb"></div>
+            <div><h4>连拍重复，表情较弱</h4><p>建议保留同组最佳照片，其余进入清理建议。</p></div>
+            <div class="score" style="color:#64748b">42</div>
+          </div>
+        </div>
+
+        <div class="timeline-demo">
+          <h3 style="margin-bottom:18px">成长节点时间轴</h3>
+          <div class="milestone"><div class="num">1</div><div><h4>出生第 7 天</h4><p>自动生成“新生儿第一周”，精选 18 张。</p></div></div>
+          <div class="milestone"><div class="num">2</div><div><h4>100 天纪念</h4><p>识别蛋糕、合影、长辈互动，生成家庭纪念册。</p></div></div>
+          <div class="milestone"><div class="num">3</div><div><h4>第一次走路</h4><p>从视频和连拍中提取关键瞬间，建议保存为成长里程碑。</p></div></div>
+          <div class="milestone"><div class="num">4</div><div><h4>1 岁生日</h4><p>按人物和场景分组，自动生成可分享相册。</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="band white">
+      <div class="head">
+        <h2>能力地图</h2>
+        <p>能力地图围绕“少量高价值照片”设计，而不是围绕“全量云端备份”设计。</p>
+      </div>
+      <div class="cards">
+        <article class="card"><div class="badge" style="background:var(--green)">01</div><h3>宝宝照片识别</h3><p>优先识别宝宝、亲子合影、长辈互动和儿童成长场景，不把所有人物识别做成同等优先级。</p></article>
+        <article class="card"><div class="badge" style="background:var(--blue)">02</div><h3>精选评分模型</h3><p>综合清晰度、表情、主体完整度、重复度、场景价值和家庭意义，输出可解释的推荐分。</p></article>
+        <article class="card"><div class="badge" style="background:var(--amber)">03</div><h3>成长节点成册</h3><p>按月龄、100 天、第一次、生日、入园、旅行等节点自动生成相册，不只是按日期聚类。</p></article>
+        <article class="card"><div class="badge" style="background:var(--rose)">04</div><h3>连拍最佳张</h3><p>从十几张相似照片里挑出表情、清晰度和构图最好的 1-3 张，减少父母人工筛选成本。</p></article>
+        <article class="card"><div class="badge" style="background:var(--violet)">05</div><h3>长辈友好分享</h3><p>给爷爷奶奶的相册默认简洁、可下载、少操作，并控制评论、上传和外链权限。</p></article>
+        <article class="card"><div class="badge" style="background:#0891b2">06</div><h3>隐私与本地处理</h3><p>默认本地识别和本地保存，云同步、家庭共享和备份均需要用户主动开启。</p></article>
+        <article class="card"><div class="badge" style="background:#475569">07</div><h3>低质照片清理</h3><p>把模糊、闭眼、重复、截图和低价值连拍归为清理建议，但永远让用户最终确认。</p></article>
+        <article class="card"><div class="badge" style="background:#0f766e">08</div><h3>成长故事导出</h3><p>支持把节点相册导出为分享海报、成长影集、家庭纪念册素材或系统相册文件夹。</p></article>
+      </div>
+    </section>
+
+    <section id="flows" class="band">
+      <div class="head">
+        <h2>核心用户流程</h2>
+        <p>流程重点不是“上传备份”，而是“授权后快速得到一组可用的家庭精选结果”。</p>
+      </div>
+      <div class="split">
+        <div>
+          <div class="tabs">
+            <button class="flow-tab active" data-tab="onboarding">宝宝 Top 20</button>
+            <button class="flow-tab" data-tab="review">成长节点</button>
+            <button class="flow-tab" data-tab="family">发给长辈</button>
+            <button class="flow-tab" data-tab="cleanup">清理连拍</button>
+          </div>
+
+          <section class="panel active" id="onboarding">
+            <div class="flow">
+              <div class="step"><div class="num">1</div><div><h3>填写宝宝资料</h3><p>输入昵称和生日，系统据此计算月龄和成长节点。</p></div></div>
+              <div class="step"><div class="num">2</div><div><h3>授权最近照片</h3><p>默认扫描最近 1000 张或最近 90 天，降低等待时间和隐私压力。</p></div></div>
+              <div class="step"><div class="num">3</div><div><h3>本地识别评分</h3><p>识别宝宝、家人、清晰度、表情、重复连拍和事件场景。</p></div></div>
+              <div class="step"><div class="num">4</div><div><h3>输出宝宝 Top 20</h3><p>直接给出可保存、可分享的一组结果，每张照片显示推荐理由。</p></div></div>
+            </div>
+          </section>
+
+          <section class="panel" id="review">
+            <div class="flow">
+              <div class="step"><div class="num">1</div><div><h3>匹配成长节点</h3><p>根据宝宝生日和拍摄日期自动命中“100 天”“6 个月”“第一次走路”等节点。</p></div></div>
+              <div class="step"><div class="num">2</div><div><h3>生成故事标题</h3><p>相册标题不是“2026 年 6 月”，而是“满 6 个月的笑脸”。</p></div></div>
+              <div class="step"><div class="num">3</div><div><h3>编辑故事内容</h3><p>用户替换封面、增删照片、修改标题，系统保留推荐依据。</p></div></div>
+              <div class="step"><div class="num">4</div><div><h3>沉淀成长档案</h3><p>节点进入宝宝成长时间轴，形成连续记录。</p></div></div>
+            </div>
+          </section>
+
+          <section class="panel" id="family">
+            <div class="flow">
+              <div class="step"><div class="num">1</div><div><h3>选择长辈版相册</h3><p>系统减少操作入口，突出大图浏览、保存、评论和语音留言。</p></div></div>
+              <div class="step"><div class="num">2</div><div><h3>设置可见范围</h3><p>按爸爸妈妈、爷爷奶奶、亲友分角色控制查看、下载、转发和上传。</p></div></div>
+              <div class="step"><div class="num">3</div><div><h3>发送私密链接</h3><p>支持有效期和访问提醒，避免儿童照片被无限扩散。</p></div></div>
+              <div class="step"><div class="num">4</div><div><h3>收集家庭互动</h3><p>评论、点赞、语音祝福和补充照片进入宝宝成长故事。</p></div></div>
+            </div>
+          </section>
+
+          <section class="panel" id="cleanup">
+            <div class="flow">
+              <div class="step"><div class="num">1</div><div><h3>识别同场景连拍</h3><p>把宝宝同一动作、同一表情、同一背景的照片聚为一组。</p></div></div>
+              <div class="step"><div class="num">2</div><div><h3>保留最佳瞬间</h3><p>系统解释“笑脸更完整、没有闭眼、主体更清晰”。</p></div></div>
+              <div class="step"><div class="num">3</div><div><h3>先移出推荐</h3><p>默认只从精选结果中移除，系统删除必须用户额外确认。</p></div></div>
+              <div class="step"><div class="num">4</div><div><h3>再执行清理</h3><p>用户确认后才删除系统照片，并展示预计释放空间和撤销入口。</p></div></div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="panel active">
+          <h3>信息架构</h3>
+          <div class="flow">
+            <div class="step"><div class="num">H</div><div><h3>首页</h3><p>宝宝 Top 20、今日成长节点、待确认推荐、家庭互动。</p></div></div>
+            <div class="step"><div class="num">A</div><div><h3>成长相册</h3><p>月龄、第一次、生日、旅行、亲子互动和长辈合影。</p></div></div>
+            <div class="step"><div class="num">O</div><div><h3>AI 整理</h3><p>本地扫描、精选评分、连拍最佳张、低质照片建议。</p></div></div>
+            <div class="step"><div class="num">F</div><div><h3>家庭空间</h3><p>长辈版相册、角色权限、私密链接、家庭留言。</p></div></div>
+            <div class="step"><div class="num">M</div><div><h3>隐私与导出</h3><p>本地处理说明、云同步开关、系统相册保存、成长影集导出。</p></div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="logic" class="band white">
+      <div class="head">
+        <h2>交互逻辑</h2>
+        <p>这些规则用于设计、研发和测试对齐，重点处理权限、扫描状态、推荐可解释性、删除风险和家庭共享边界。</p>
+      </div>
+      <div class="logic-grid">
+        <article class="logic"><div class="state"><span class="dot"></span>Permission</div><h3>相册权限逻辑</h3><p>未授权显示价值说明；选中照片权限时仅扫描可访问资产；权限被拒绝时提供系统设置入口和手动导入替代路径。</p></article>
+        <article class="logic"><div class="state"><span class="dot" style="background:var(--blue)"></span>Scan</div><h3>扫描状态机</h3><p>状态包含待开始、扫描中、暂停、后台继续、失败、完成。失败要区分权限、低电量、存储不足和系统中断。</p></article>
+        <article class="logic"><div class="state"><span class="dot" style="background:var(--amber)"></span>Rank</div><h3>精选评分逻辑</h3><p>综合人物置信度、清晰度、表情、构图、重复度和场景价值。每个推荐相册都要展示可理解的推荐理由。</p></article>
+        <article class="logic"><div class="state"><span class="dot" style="background:var(--rose)"></span>Delete</div><h3>删除风险逻辑</h3><p>删除系统照片必须二次确认；App 内移除、归档、隐藏和系统删除是不同语义，按钮文案必须明确。</p></article>
+        <article class="logic"><div class="state"><span class="dot" style="background:var(--violet)"></span>Family</div><h3>家庭权限逻辑</h3><p>家庭空间区分所有者、管理员、成员、访客。默认只读，上传、下载、邀请和删除需要单独授权。</p></article>
+        <article class="logic"><div class="state"><span class="dot" style="background:#0891b2"></span>Sync</div><h3>同步逻辑</h3><p>默认本地保存；开启云备份或家庭共享前必须展示隐私说明、备份范围、网络策略和可关闭入口。</p></article>
+      </div>
+    </section>
+
+    <section id="prd" class="band">
+      <div class="head">
+        <h2>PRD 草案</h2>
+        <p>这是一版可直接用于评审的产品文档骨架，覆盖定位、用户、范围、页面、关键规则和验收标准。</p>
+      </div>
+      <div class="doc-layout">
+        <aside class="toc">
+          <a href="#p1">1. 产品定位</a>
+          <a href="#p2">2. 用户画像</a>
+          <a href="#p3">3. MVP 范围</a>
+          <a href="#p4">4. 页面结构</a>
+          <a href="#p5">5. 核心规则</a>
+          <a href="#p6">6. 验收标准</a>
+        </aside>
+        <div class="doc">
+          <section class="doc-block" id="p1">
+            <h3>1. 产品定位</h3>
+            <p>稚光是面向宝宝家庭的本地 AI 照片精选与成长成册工具。它不是 Google 相册式的全量云备份产品，而是帮助父母从海量照片中挑出少量高价值照片，自动归入宝宝成长节点，并以长辈友好的方式安全分享给家人。</p>
+          </section>
+          <section class="doc-block" id="p2">
+            <h3>2. 用户画像</h3>
+            <ul>
+              <li>新手父母：每天拍大量宝宝照片，需要自动挑选和按月龄整理。</li>
+              <li>家庭组织者：负责把旅行、节日、聚会照片整理给家人看。</li>
+              <li>手机空间焦虑用户：相册堆积严重，希望清理重复和低质量照片。</li>
+              <li>长辈用户：希望简单查看家庭照片，不想学习复杂云盘操作。</li>
+            </ul>
+          </section>
+          <section class="doc-block" id="p3">
+            <h3>3. MVP 范围</h3>
+            <ul>
+              <li>必须有：宝宝资料、最近照片扫描、宝宝识别、精选评分、推荐理由、宝宝 Top 20、成长节点相册、手动调整、保存到系统相册。</li>
+              <li>应该有：同场景连拍分组、最佳张推荐、长辈版分享页、家庭角色权限、语音留言。</li>
+              <li>暂不做：公开社区、复杂修图、全量云盘、通用文件备份、打印服务、跨平台桌面端。</li>
+            </ul>
+          </section>
+          <section class="doc-block" id="p4">
+            <h3>4. 页面结构</h3>
+            <ul>
+              <li>首页：宝宝 Top 20、今日成长节点、待确认推荐、长辈互动。</li>
+              <li>成长相册页：月龄、第一次、生日、旅行、亲子互动、长辈合影。</li>
+              <li>AI 整理页：本地扫描、精选评分、连拍最佳张、低质照片建议。</li>
+              <li>家庭空间页：长辈版相册、私密链接、语音留言、角色权限。</li>
+              <li>隐私导出页：本地处理说明、云同步开关、系统相册保存、成长影集导出。</li>
+            </ul>
+          </section>
+          <section class="doc-block" id="p5">
+            <h3>5. 核心规则</h3>
+            <ul>
+              <li>AI 只能推荐，不能自动删除、自动上传或自动分享儿童照片。</li>
+              <li>每张精选照片必须给出推荐理由，例如“笑脸清晰”“主体完整”“成长节点命中”。</li>
+              <li>默认本地处理；云同步、家庭共享和备份必须由用户主动开启。</li>
+              <li>长辈分享链接默认私密，并显示有效期、访问对象和下载权限。</li>
+            </ul>
+          </section>
+          <section class="doc-block" id="p6">
+            <h3>6. 验收标准</h3>
+            <ul>
+              <li>新用户 3 分钟内完成宝宝资料、授权、扫描并生成“宝宝 Top 20”。</li>
+              <li>Top 20 中每张照片都有可理解的推荐理由和移除入口。</li>
+              <li>系统至少自动生成 3 类成长节点相册，例如月龄、第一次、生日。</li>
+              <li>长辈版分享页无需登录也能低门槛查看，但下载和转发受权限控制。</li>
+              <li>清理连拍时必须先推荐最佳张，系统删除必须二次确认。</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="metrics" class="band white">
+      <div class="head">
+        <h2>关键指标</h2>
+        <p>指标不只看相册访问量，而要验证“AI 精选是否真的省时间、成长成册是否有价值、长辈分享是否顺畅”。</p>
+      </div>
+      <div class="metric">
+        <div class="metric-item"><strong>Top 20 保存率</strong><span>查看宝宝 Top 20 后保存结果的用户占比。</span></div>
+        <div class="metric-item"><strong>推荐采纳率</strong><span>AI 推荐照片中被用户保留的比例，用来衡量精选质量。</span></div>
+        <div class="metric-item"><strong>节点成册率</strong><span>成功生成并被用户打开的成长节点相册比例。</span></div>
+        <div class="metric-item"><strong>长辈打开率</strong><span>分享给家人后，长辈实际打开并互动的比例。</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    稚光产品展示页｜适用于产品评审、原型说明、PRD 初稿和团队讨论。
+  </footer>
+
+  <script>
+    const tabs = document.querySelectorAll(".flow-tab");
+    const panels = document.querySelectorAll(".panel[id]");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => item.classList.remove("active"));
+        panels.forEach((panel) => panel.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>
