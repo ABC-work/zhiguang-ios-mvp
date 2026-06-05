@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>稚光 iOS MVP · 页面导航流程</title>
+  <title>稚光 iOS MVP · 导航流程设计文档 v3</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -11,444 +11,508 @@
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 40px 16px 60px;
     }
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #888;
-      font-size: 13px;
-      margin-bottom: 40px;
-    }
+    a { color: #6c63ff; text-decoration: none; }
 
-    .flow {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      max-width: 480px;
-      margin: 0 auto;
+    /* ── TOC ── */
+    .toc {
+      max-width: 680px; margin: 0 auto 40px;
+      background: #141414; border: 1px solid #222; border-radius: 12px;
+      padding: 18px 22px;
     }
+    .toc-title { font-size: 11px; font-weight: 700; color: #555; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { font-size: 12px; color: #888; line-height: 2; }
+    .toc li a:hover { color: #9c8fff; }
+
+    /* ── Headers ── */
+    h1 { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 8px; }
+    .version-tag { text-align: center; margin-bottom: 36px; }
+    .version-tag span {
+      background: #6c63ff22; border: 1px solid #6c63ff55;
+      color: #6c63ff; font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px;
+    }
+    .section-header {
+      max-width: 680px; margin: 52px auto 20px;
+      border-top: 1px solid #1e1e1e; padding-top: 32px;
+      text-align: center;
+    }
+    .section-header h2 { font-size: 15px; font-weight: 700; color: #777; letter-spacing: 1.5px; text-transform: uppercase; }
+    .section-header p { color: #444; font-size: 12px; margin-top: 6px; }
+
+    /* ── Flow ── */
+    .flow { display: flex; flex-direction: column; align-items: center; gap: 0; max-width: 540px; margin: 0 auto; }
 
     .page-box {
-      background: #1a1a2e;
-      border: 2px solid #6c63ff;
-      border-radius: 14px;
-      padding: 16px 28px;
-      text-align: center;
-      min-width: 260px;
-      width: 100%;
+      background: #161622; border: 2px solid #6c63ff; border-radius: 14px;
+      padding: 14px 20px; width: 100%;
     }
-    .page-label {
-      color: #6c63ff;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-    .page-title {
-      color: #fff;
-      font-size: 17px;
-      font-weight: 700;
-    }
-    .page-desc {
-      color: #aaa;
-      font-size: 12px;
-      margin-top: 5px;
-      line-height: 1.5;
-    }
+    .page-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+    .page-label { color: #6c63ff; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; flex-shrink: 0; }
+    .page-title { color: #fff; font-size: 16px; font-weight: 700; }
+    .page-desc { color: #777; font-size: 11px; margin-bottom: 8px; font-style: italic; }
 
-    .arrow {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 4px 0;
-    }
-    .arrow-icon { color: #6c63ff; font-size: 22px; line-height: 1; }
-    .arrow-label { color: #777; font-size: 11px; margin-top: 2px; }
+    .rules { display: flex; flex-direction: column; gap: 5px; }
+    .rule { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; color: #bbb; line-height: 1.6; }
+    .rule-icon { flex-shrink: 0; font-size: 10px; margin-top: 3px; }
+    .rule-icon.new { color: #4caf50; }
+    .rule-icon.keep { color: #6c63ff; }
+    .rule-icon.warn { color: #ff9800; }
+    .rule-icon.crit { color: #f44336; }
 
-    .branch {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      margin: 6px 0;
-      width: 100%;
-      justify-content: center;
-    }
-    .branch-main { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .branch-side {
-      background: #1e1414;
-      border: 1px solid #f44336;
-      border-radius: 10px;
-      padding: 9px 14px;
-      text-align: center;
-      font-size: 12px;
-    }
-    .branch-side.warn {
-      border-color: #ff9800;
-      background: #1c1810;
-    }
-    .branch-side-label { font-weight: 600; margin-bottom: 3px; }
-    .branch-side-label.red { color: #f44336; }
-    .branch-side-label.orange { color: #ff9800; }
-    .branch-side-desc { color: #999; }
+    .badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+    .badge.required { background: #f4433622; border: 1px solid #f4433666; color: #f44336; }
+    .badge.optional { background: #4caf5022; border: 1px solid #4caf5066; color: #4caf50; }
+    .badge.new { background: #6c63ff22; border: 1px solid #6c63ff66; color: #9c8fff; }
+    .badge.p0 { background: #f4433618; border: 1px solid #f4433644; color: #f44336; }
+    .badge.p1 { background: #ff980018; border: 1px solid #ff980044; color: #ff9800; }
+    .badge.p2 { background: #2196f318; border: 1px solid #2196f344; color: #2196f3; }
 
+    /* ── Arrows ── */
+    .arrow { display: flex; flex-direction: column; align-items: center; margin: 4px 0; }
+    .arrow-icon { color: #6c63ff; font-size: 20px; line-height: 1; }
+    .arrow-label { color: #555; font-size: 11px; margin-top: 2px; }
+
+    /* ── Permission cards ── */
+    .perm-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 6px 0; }
+    @media (max-width: 500px) { .perm-grid { grid-template-columns: 1fr; } }
+    .perm-card { border-radius: 10px; padding: 10px 12px; font-size: 11px; border: 1px solid; }
+    .perm-card.green { background: #0d1a0d; border-color: #4caf5066; }
+    .perm-card.yellow { background: #1a1a0d; border-color: #ffeb3b66; }
+    .perm-card.red { background: #1a0d0d; border-color: #f4433666; }
+    .perm-card-label { font-weight: 700; font-size: 12px; margin-bottom: 5px; }
+    .perm-card.green .perm-card-label { color: #4caf50; }
+    .perm-card.yellow .perm-card-label { color: #ffeb3b; }
+    .perm-card.red .perm-card-label { color: #f44336; }
+    .perm-card p { color: #aaa; line-height: 1.5; }
+
+    /* ── Global Banner notice ── */
+    .banner-notice {
+      width: 100%; background: #1a1a0a; border: 1px solid #ffeb3b44;
+      border-radius: 8px; padding: 9px 14px; margin: 4px 0;
+      display: flex; gap: 9px; align-items: flex-start;
+    }
+    .banner-notice-icon { color: #ffeb3b; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+    .banner-notice-text { font-size: 11px; color: #ccc; line-height: 1.6; }
+
+    /* ── Branch block ── */
+    .branch { width: 100%; display: flex; align-items: flex-start; gap: 10px; margin: 5px 0; }
+    .branch-main { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+    .branch-ok { color: #4caf50; font-size: 10px; font-weight: 600; }
+    .branch-cards { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .bcard { border-radius: 9px; padding: 9px 12px; font-size: 11px; border: 1px solid; line-height: 1.5; }
+    .bcard.orange { background: #1a1408; border-color: #ff980066; }
+    .bcard.red { background: #1a0808; border-color: #f4433666; }
+    .bcard-label { font-weight: 700; margin-bottom: 3px; }
+    .bcard.orange .bcard-label { color: #ff9800; }
+    .bcard.red .bcard-label { color: #f44336; }
+    .bcard p { color: #bbb; }
+
+    /* ── Loop & special ── */
     .loop-note {
-      margin-top: 18px;
-      background: #141414;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 10px 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
+      margin-top: 14px; background: #111; border: 1px solid #2a2a2a;
+      border-radius: 10px; padding: 10px 16px;
+      display: flex; align-items: flex-start; gap: 10px; width: 100%;
     }
-    .loop-icon { color: #6c63ff; font-size: 18px; }
-    .loop-text { color: #999; font-size: 12px; line-height: 1.5; }
+    .loop-icon { color: #6c63ff; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .loop-text { color: #888; font-size: 11px; line-height: 1.6; }
 
-    .special-paths {
-      margin-top: 14px;
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 14px 18px;
-      width: 100%;
+    .special-box {
+      margin-top: 12px; background: #0f0f0f; border: 1px solid #222;
+      border-radius: 12px; padding: 14px 18px; width: 100%;
     }
-    .special-title {
-      color: #666;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-    .special-item {
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      margin-bottom: 7px;
-    }
-    .special-item:last-child { margin-bottom: 0; }
-    .dot { font-size: 10px; margin-top: 2px; flex-shrink: 0; }
-    .dot.green { color: #4caf50; }
-    .dot.orange { color: #ff9800; }
-    .dot.red { color: #f44336; }
-    .special-item span { color: #ccc; font-size: 12px; line-height: 1.5; }
+    .special-box-title { font-size: 10px; font-weight: 700; color: #444; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .sp-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 7px; font-size: 11px; color: #ccc; line-height: 1.6; }
+    .sp-item:last-child { margin-bottom: 0; }
+    .sp-dot { flex-shrink: 0; font-size: 10px; margin-top: 3px; }
 
-    .arch-section {
-      max-width: 680px;
-      margin: 50px auto 0;
-      border-top: 1px solid #222;
-      padding-top: 40px;
-    }
-    .arch-section h2 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-    .arch-subtitle {
-      text-align: center;
-      color: #888;
-      font-size: 13px;
-      margin-bottom: 28px;
-    }
+    /* ── Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .data-table th { background: #1a1a2e; color: #6c63ff; padding: 9px 12px; text-align: left; font-weight: 700; letter-spacing: 0.5px; }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; line-height: 1.6; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:nth-child(even) td { background: #0d0d0d; }
 
-    .arch-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    /* ── Priority ── */
+    .priority-grid { max-width: 680px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 580px) { .priority-grid { grid-template-columns: 1fr; } }
+    .prio-card { background: #111; border-radius: 12px; padding: 16px; border: 1px solid; }
+    .prio-card.p0 { border-color: #f4433644; }
+    .prio-card.p1 { border-color: #ff980044; }
+    .prio-card.p2 { border-color: #2196f344; }
+    .prio-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; }
+    .prio-card.p0 .prio-label { color: #f44336; }
+    .prio-card.p1 .prio-label { color: #ff9800; }
+    .prio-card.p2 .prio-label { color: #2196f3; }
+    .prio-card ul { list-style: none; padding: 0; }
+    .prio-card li { font-size: 11px; color: #bbb; padding: 4px 0; border-bottom: 1px solid #1a1a1a; line-height: 1.5; }
+    .prio-card li:last-child { border-bottom: none; }
+
+    /* ── Arch ── */
+    .arch-grid { max-width: 680px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 520px) { .arch-grid { grid-template-columns: 1fr; } }
+    .arch-card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 14px 16px; }
+    .arch-title { font-size: 11px; font-weight: 700; color: #6c63ff; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .arch-card ul { list-style: none; padding: 0; }
+    .arch-card li { font-size: 11px; color: #aaa; padding: 3px 0; border-bottom: 1px solid #1a1a1a; line-height: 1.5; }
+    .arch-card li:last-child { border-bottom: none; }
+    .f { color: #7ec8e3; }
+    .n { color: #444; font-size: 10px; }
 
-    .arch-card {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .arch-card-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #6c63ff;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-    .arch-card ul {
-      list-style: none;
-      padding: 0;
-    }
-    .arch-card ul li {
-      font-size: 12px;
-      color: #aaa;
-      padding: 3px 0;
-      border-bottom: 1px solid #1e1e1e;
-      line-height: 1.5;
-    }
-    .arch-card ul li:last-child { border-bottom: none; }
-    .file { color: #7ec8e3; }
-    .note { color: #666; font-size: 11px; }
+    .data-flow { max-width: 680px; margin: 12px auto 0; background: #111; border: 1px solid #222; border-radius: 12px; padding: 16px 20px; font-size: 11px; color: #888; line-height: 2.2; }
+    .df-hi { color: #fff; font-weight: 600; }
+    .df-ar { color: #6c63ff; }
 
-    .data-flow {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin-top: 12px;
-      font-size: 12px;
-      color: #aaa;
-      line-height: 2;
-    }
-    .flow-arrow { color: #6c63ff; }
-    .flow-highlight { color: #fff; font-weight: 600; }
+    /* ── Scoring ── */
+    .weight { display: inline-block; background: #1a1a2e; color: #6c63ff; font-weight: 700; padding: 2px 7px; border-radius: 5px; font-size: 10px; }
+    .api { display: inline-block; background: #0d1a0d; color: #4caf50; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 4px; }
 
-    .scoring-section {
-      max-width: 680px;
-      margin: 40px auto 0;
-      border-top: 1px solid #222;
-      padding-top: 40px;
-    }
-    .scoring-section h2 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      text-align: center;
-    }
+    .info-box { background: #111; border: 1px solid #222; border-radius: 10px; padding: 14px 18px; font-size: 11px; color: #999; line-height: 2; }
+    .info-box strong { color: #fff; }
+    .info-box .hi { color: #6c63ff; font-weight: 600; }
 
-    .score-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      font-size: 13px;
-    }
-    .score-table th {
-      background: #1a1a2e;
-      color: #6c63ff;
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-    }
-    .score-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid #1e1e1e;
-      color: #ccc;
-      vertical-align: top;
-    }
-    .score-table tr:last-child td { border-bottom: none; }
-    .score-table tr:nth-child(even) td { background: #111; }
-    .weight {
-      display: inline-block;
-      background: #1a1a2e;
-      color: #6c63ff;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-    .api-tag {
-      display: inline-block;
-      background: #1a2a1a;
-      color: #4caf50;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 4px;
-    }
+    /* ── UX micro ── */
+    .ux-grid { max-width: 680px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 480px) { .ux-grid { grid-template-columns: 1fr; } }
+    .ux-card { background: #111; border: 1px solid #222; border-radius: 10px; padding: 13px 15px; }
+    .ux-icon { font-size: 18px; margin-bottom: 6px; }
+    .ux-title { font-size: 12px; font-weight: 700; color: #ddd; margin-bottom: 4px; }
+    .ux-desc { font-size: 11px; color: #777; line-height: 1.6; }
   </style>
 </head>
 <body>
 
 <h1>稚光 iOS MVP · 设计文档</h1>
 <p class="subtitle">SwiftUI + PhotoKit + Vision · iOS 16+ · MVVM</p>
+<div class="version-tag"><span>v3 · 产品交互专业优化已合并 · 2026-06-05</span></div>
 
-<!-- ========== NAVIGATION FLOW ========== -->
-<div style="max-width: 480px; margin: 0 auto;">
-  <h2 style="text-align:center; font-size: 16px; color: #888; font-weight: 600; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;">页面导航流程</h2>
-
-  <div class="flow">
-
-    <div class="page-box">
-      <div class="page-label">PAGE 1</div>
-      <div class="page-title">启动说明页</div>
-      <div class="page-desc">首次打开时展示 · 已扫描过直接跳结果页</div>
-    </div>
-
-    <div class="arrow">
-      <div class="arrow-icon">↓</div>
-      <div class="arrow-label">点击「开始整理」</div>
-    </div>
-
-    <div class="page-box">
-      <div class="page-label">PAGE 2</div>
-      <div class="page-title">宝宝资料页</div>
-      <div class="page-desc">昵称 · 生日 · 性别（均可跳过）</div>
-    </div>
-
-    <div class="arrow">
-      <div class="arrow-icon">↓</div>
-      <div class="arrow-label">点击「下一步」</div>
-    </div>
-
-    <div class="page-box">
-      <div class="page-label">PAGE 3</div>
-      <div class="page-title">相册权限页</div>
-      <div class="page-desc">申请系统相册读取权限</div>
-    </div>
-
-    <div class="branch">
-      <div class="branch-main">
-        <div class="arrow-icon" style="color: #6c63ff;">↓</div>
-        <div style="color: #4caf50; font-size: 11px; font-weight: 600;">已授权 / 部分授权</div>
-      </div>
-      <div class="branch-side" style="align-self: center;">
-        <div class="branch-side-label red">拒绝权限</div>
-        <div class="branch-side-desc">跳转系统设置</div>
-      </div>
-    </div>
-
-    <div class="page-box">
-      <div class="page-label">PAGE 4</div>
-      <div class="page-title">扫描进度页</div>
-      <div class="page-desc">读取 → 过滤截图/二维码 → 人脸识别 → 评分 → 生成 Top 20</div>
-    </div>
-
-    <div class="branch">
-      <div class="branch-main">
-        <div class="arrow-icon" style="color: #6c63ff;">↓</div>
-        <div style="color: #4caf50; font-size: 11px; font-weight: 600;">扫描完成，有宝宝照片</div>
-      </div>
-      <div class="branch-side warn" style="align-self: center;">
-        <div class="branch-side-label orange">未识别到宝宝</div>
-        <div class="branch-side-desc">提示扩大范围</div>
-      </div>
-    </div>
-
-    <div class="page-box">
-      <div class="page-label">PAGE 5</div>
-      <div class="page-title">宝宝 Top 20 结果页</div>
-      <div class="page-desc">查看推荐照片 · 移除/恢复 · 预览大图 · 保存精选</div>
-    </div>
-
-    <div class="arrow">
-      <div class="arrow-icon">↓</div>
-      <div class="arrow-label">点击「保存精选」</div>
-    </div>
-
-    <div class="page-box">
-      <div class="page-label">PAGE 6</div>
-      <div class="page-title">保存完成页</div>
-      <div class="page-desc">查看系统相册「稚光精选」· 系统分享 · 重新整理</div>
-    </div>
-
-    <div class="loop-note">
-      <span class="loop-icon">↺</span>
-      <span class="loop-text">「重新整理」→ 跳回扫描进度页（跳过资料页和权限页）</span>
-    </div>
-
-    <div class="special-paths">
-      <div class="special-title">特殊路径</div>
-      <div class="special-item">
-        <span class="dot green">●</span>
-        <span>已完成首次扫描：启动页 → 直接跳结果页</span>
-      </div>
-      <div class="special-item">
-        <span class="dot orange">●</span>
-        <span>部分授权：继续扫描，结果页顶部显示「结果可能不完整」Banner</span>
-      </div>
-      <div class="special-item">
-        <span class="dot red">●</span>
-        <span>保存失败：完成页内展示失败原因 + 重试入口，不跳页</span>
-      </div>
-    </div>
-
-  </div>
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">目录</div>
+  <ol>
+    <li><a href="#flow">页面导航流程</a></li>
+    <li><a href="#perm-table">权限全链路规则表</a></li>
+    <li><a href="#save-fail">保存失败精细化分类</a></li>
+    <li><a href="#priority">整改优先级</a></li>
+    <li><a href="#arch">项目架构</a></li>
+    <li><a href="#scoring">评分算法</a></li>
+    <li><a href="#ux">交互体验细节</a></li>
+  </ol>
 </div>
 
-<!-- ========== ARCHITECTURE ========== -->
-<div class="arch-section">
-  <h2>项目结构</h2>
-  <p class="arch-subtitle">MVVM · actor Services · @MainActor ViewModels</p>
-
-  <div class="arch-grid">
-    <div class="arch-card">
-      <div class="arch-card-title">Features/</div>
-      <ul>
-        <li><span class="file">Onboarding/</span> <span class="note">启动说明页</span></li>
-        <li><span class="file">BabyProfile/</span> <span class="note">宝宝资料页</span></li>
-        <li><span class="file">Permission/</span> <span class="note">相册权限页</span></li>
-        <li><span class="file">Scanning/</span> <span class="note">扫描进度页</span></li>
-        <li><span class="file">Results/</span> <span class="note">Top 20 结果页</span></li>
-        <li><span class="file">SaveComplete/</span> <span class="note">保存完成页</span></li>
-      </ul>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-title">Services/</div>
-      <ul>
-        <li><span class="file">PhotoLibraryService</span> <span class="note">PhotoKit 封装，actor</span></li>
-        <li><span class="file">ScoringEngine</span> <span class="note">Vision 评分，actor</span></li>
-        <li><span class="file">AlbumSaveService</span> <span class="note">写入「稚光精选」</span></li>
-      </ul>
-      <div class="arch-card-title" style="margin-top: 14px;">Models/</div>
-      <ul>
-        <li><span class="file">BabyProfile</span></li>
-        <li><span class="file">PhotoAsset</span></li>
-        <li><span class="file">PhotoScore</span></li>
-        <li><span class="file">ScanResult</span></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="data-flow">
-    <span class="flow-highlight">PhotoLibraryService</span>
-    <span class="flow-arrow"> → </span>[PhotoAsset]
-    <span class="flow-arrow"> → </span>
-    <span class="flow-highlight">ScoringEngine</span>
-    <span class="flow-arrow"> → </span>[PhotoScore]
-    <span class="flow-arrow"> → </span>
-    <span class="flow-highlight">ScanningViewModel</span>
-    <br>
-    <span class="flow-arrow">→ </span>ScanResult
-    <span class="flow-arrow"> → </span>
-    <span class="flow-highlight">ResultsViewModel</span>
-    <span class="flow-arrow"> → </span>
-    <span class="flow-highlight">AlbumSaveService</span>
-    <span class="flow-arrow"> → </span>
-    <span class="flow-highlight">SaveCompleteViewModel</span>
-  </div>
+<!-- ══════════════ 1. NAVIGATION FLOW ══════════════ -->
+<div class="section-header" id="flow">
+  <h2>页面导航流程</h2>
+  <p>标准顺序：启动说明 → 相册权限 → 宝宝资料 → 扫描 → 结果 → 完成</p>
 </div>
 
-<!-- ========== SCORING ALGORITHM ========== -->
-<div class="scoring-section">
-  <h2>评分算法</h2>
-  <p class="arch-subtitle" style="text-align:center; color:#888; font-size:13px; margin-bottom:20px;">Vision 框架 · 规则评分 · 无需外部模型</p>
+<div class="flow">
 
-  <table class="score-table">
+  <!-- PAGE 1 -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 1</span><span class="page-title">启动说明页</span></div>
+    <div class="page-desc">介绍 App 本地处理、不上传云端的核心理念</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon keep">●</span><span>已授权 + 有宝宝数据：冷启动直接跳 PAGE 5 结果页</span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>引导中途冷启动（权限/资料/扫描三类断点）：从对应中断页面继续，不重走启动引导</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>设置入口内增加【重新走新手引导】开关，老用户可主动回本页 <span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>页面底部小字：「所有图片仅本地设备处理，不上传云端，符合隐私法规」<span class="badge new">合规</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>底部可查看完整隐私协议链接（三处锚点之一：启动页 / 权限页 / 设置页）<span class="badge new">合规</span></span></div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-icon">↓</div><div class="arrow-label">点击「开始整理」（首次）</div></div>
+
+  <!-- PAGE 3 Permission -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 3</span><span class="page-title">相册权限页</span></div>
+    <div class="page-desc">先申请权限再录入宝宝信息，符合 Apple 审核规范</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon new">+</span><span>权限弹窗前，页面提前说明「需要相册权限读取宝宝照片，所有数据本地存储不上传」，提升授权率 <span class="badge new">合规</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>部分授权文案优化：「仅可访问部分相册，扫描范围受限，照片筛选结果可能不完整」<span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>用户从系统设置返回 App → 弹窗友好说明「缺少相册权限无法扫描，可去设置开启或手动传图」，重新触发授权弹窗</span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>后续去系统关闭权限 → 从任意页面切回 App 弹窗拦截，跳转权限页</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>隐私协议锚点（三处之二） <span class="badge new">合规</span></span></div>
+    </div>
+  </div>
+
+  <div class="perm-grid">
+    <div class="perm-card green">
+      <div class="perm-card-label">✓ 完全授权</div>
+      <p>正常进入宝宝资料页，无任何 Banner</p>
+    </div>
+    <div class="perm-card yellow">
+      <div class="perm-card-label">⚠ 部分授权</div>
+      <p>放行进入资料页，<strong style="color:#ffeb3b">全局标记</strong>，全链路固定黄色 Banner 透传，不可手动关闭</p>
+    </div>
+    <div class="perm-card red">
+      <div class="perm-card-label">✕ 拒绝权限</div>
+      <p>弹窗双选项：<br>①【去系统设置开权限】<br>②<strong style="color:#ff9800">【手动上传单张照片】</strong>（折中方案，降低流失率）<span class="badge new">NEW</span></p>
+    </div>
+  </div>
+
+  <div class="banner-notice">
+    <span class="banner-notice-icon">⚠</span>
+    <span class="banner-notice-text"><strong style="color:#ffeb3b">部分授权全局状态透传：</strong>权限页标记 → 扫描页底部悬浮提示 → 结果页顶部固定 Banner → 保存页提示，全程不丢失，冷启动保留，权限恢复全量后 Banner 自动消失</span>
+  </div>
+
+  <div class="arrow"><div class="arrow-icon">↓</div><div class="arrow-label">完全授权 / 部分授权</div></div>
+
+  <!-- PAGE 2 Baby Profile -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 2</span><span class="page-title">宝宝资料页</span></div>
+    <div class="page-desc">收集宝宝信息，为人脸分组和成长节点做准备</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon crit">●</span><span>昵称 <span class="badge required">必填</span> — 空值点击「下一步」触发输入框<strong>红框 + 悬浮提示「请填写宝宝昵称，用于照片分组」</strong>，不禁用按钮 <span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>生日 <span class="badge optional">可选</span> 性别 <span class="badge optional">可选</span>，保留跳过按钮</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>生日/性别字段小字提示：「完善生日可精准筛选对应月龄成长照片」<span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>新增宝宝中途退出：本地缓存已填信息，下次从结果页进入资料页自动回填 <span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>结果页 / 保存页提供「新增宝宝」入口，跳转本页，录入后独立触发扫描</span></div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-icon">↓</div><div class="arrow-label">昵称已填，点击「下一步」</div></div>
+
+  <!-- PAGE 4 Scanning -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 4</span><span class="page-title">扫描进度页</span></div>
+    <div class="page-desc">读取 → 过滤 → 人脸识别 → 评分 → 生成 Top 20</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon new">+</span><span>右上角常驻【取消】按钮：取消后返回结果页（已有数据）/ 资料页（新宝宝）<span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>部分授权：底部固定悬浮小字「当前仅获取部分相册，部分照片无法被扫描识别」</span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>中途切后台 / 杀进程：本地缓存进度，下次进入续扫，不从头重来</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>相册为空：展示空页面，双路径按钮：①【前往系统相册添加图片】 ②【手动上传单张照片】<span class="badge new">NEW</span></span></div>
+    </div>
+  </div>
+
+  <!-- Scan branches -->
+  <div class="branch">
+    <div class="branch-main">
+      <div style="color:#6c63ff;font-size:20px;">↓</div>
+      <div class="branch-ok">扫描完成</div>
+    </div>
+    <div class="branch-cards">
+      <div class="bcard orange">
+        <div class="bcard-label">未识别到宝宝照片</div>
+        <p>弹窗三选项：<br>①【调整宝宝信息】→ 跳宝宝资料页，改完重新扫描<br>②【全量扩容扫描】→ 原地全相册重扫<br>③【取消，返回结果页】→ 保留旧数据 <span class="badge new">NEW</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5 -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 5</span><span class="page-title">宝宝 Top 20 结果页</span></div>
+    <div class="page-desc">查看 AI 推荐结果，允许用户调整</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon warn">●</span><span>部分授权：顶部固定 Banner 不可手动关闭</span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>功能：移除 / 恢复、预览大图、保存精选</span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>多宝宝切换：切换时缓存上次筛选状态（移除/精选），不重置</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>【新增宝宝】跳转前置校验：若当前权限不全，弹窗提醒「相册权限不全，新增宝宝扫描会缺失图片，建议先开启全量权限」<span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>全部移除后空状态：展示「暂无宝宝照片」+ 双按钮：①【重新全量扫描】 ②【新增宝宝】<span class="badge new">NEW</span></span></div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-icon">↓</div><div class="arrow-label">点击「保存精选」</div></div>
+
+  <!-- PAGE 6 -->
+  <div class="page-box">
+    <div class="page-header"><span class="page-label">PAGE 6</span><span class="page-title">保存完成页</span></div>
+    <div class="page-desc">确认保存成功，引导查看 / 分享</div>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon keep">●</span><span>成功：展示已保存数量，按钮：查看相册 / 系统分享 / 重新整理</span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>分享成功：留存本页，Toast「分享完成」+ 新增【回到首页】快捷按钮 <span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>分享取消：Toast「分享已取消」；系统异常失败：Toast「分享失败，请重试」<span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon new">+</span><span>「重新整理」双分支：有权限 → 直接进扫描页；权限失效 → 跳权限页 <span class="badge new">NEW</span></span></div>
+      <div class="rule"><span class="rule-icon keep">●</span><span>固定入口：【新增宝宝】→ 宝宝资料页</span></div>
+    </div>
+  </div>
+
+  <div class="loop-note">
+    <span class="loop-icon">↺</span>
+    <span class="loop-text">「重新整理」→ 有效权限：直接进扫描页 | 权限失效：先落权限页，重新授权后进扫描页</span>
+  </div>
+
+  <!-- Special paths -->
+  <div class="special-box">
+    <div class="special-box-title">全局特殊路径</div>
+    <div class="sp-item"><span class="sp-dot" style="color:#4caf50">●</span><span>老用户冷启动（已授权 + 有数据）：直接跳结果页，跳过全部引导</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#ffeb3b">●</span><span>部分授权：全链路 Banner 透传，冷启动保留，权限恢复全量后自动消失</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#f44336">●</span><span>拒绝权限冷启动（有历史数据）：仍停权限页，展示弹窗常驻去设置按钮，无法往下走</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#f44336">●</span><span>中途系统关闭权限：从任意页面切回 App，弹窗拦截跳转权限页</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#9c27b0">●</span><span>新增宝宝闭环：结果页/保存页「新增宝宝」→ 资料页（昵称必填，草稿自动回填）→ 保存后独立扫描 → 独立 Top 20</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#2196f3">●</span><span>多宝宝 + 混合权限：A 宝宝全授权、B 宝宝部分授权，切换宝宝同步切换 Banner 提示</span></div>
+    <div class="sp-item"><span class="sp-dot" style="color:#ff9800">●</span><span>引导三类断点：权限中断落权限页 / 资料填写中断落资料页 / 扫描中断落扫描页</span></div>
+  </div>
+
+</div><!-- /flow -->
+
+<!-- ══════════════ 2. PERMISSION TABLE ══════════════ -->
+<div class="section-header" id="perm-table">
+  <h2>权限全链路规则表</h2>
+  <p>三种权限状态 × 冷启动 / Banner / 退出重进 完整矩阵</p>
+</div>
+<div style="max-width: 680px; margin: 0 auto; overflow-x: auto;">
+  <table class="data-table">
     <tr>
-      <th>维度</th>
-      <th>权重</th>
-      <th>实现方式</th>
+      <th>权限类型</th><th>冷启动行为</th><th>全链路 Banner</th><th>退出重进规则</th>
     </tr>
+    <tr>
+      <td style="color:#4caf50;font-weight:700;">完全授权</td>
+      <td>有数据直跳结果页</td>
+      <td>无任何提示 Banner</td>
+      <td>任意退出，冷启动停留在离开页面</td>
+    </tr>
+    <tr>
+      <td style="color:#ffeb3b;font-weight:700;">部分授权</td>
+      <td>有数据直跳结果页</td>
+      <td>全页面顶部固定黄色 Banner，不可手动关闭，权限恢复后自动消失</td>
+      <td>冷启动保留 Banner，权限不变不消失</td>
+    </tr>
+    <tr>
+      <td style="color:#f44336;font-weight:700;">拒绝权限</td>
+      <td>有数据仍停权限页</td>
+      <td>弹窗常驻去设置按钮，无法往下走</td>
+      <td>每次冷启动强制拦截在权限页</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════ 3. SAVE FAILURE ══════════════ -->
+<div class="section-header" id="save-fail">
+  <h2>保存失败精细化分类</h2>
+  <p>PAGE 6 · 保存完成页异常分支</p>
+</div>
+<div style="max-width: 680px; margin: 0 auto; overflow-x: auto;">
+  <table class="data-table">
+    <tr><th>失败原因</th><th>页面表现</th></tr>
+    <tr>
+      <td>相册写入权限不足</td>
+      <td>展示原因 + 【前往设置开启相册写入权限】按钮，跳转系统权限设置</td>
+    </tr>
+    <tr>
+      <td>手机存储空间已满</td>
+      <td>提示「存储空间不足」+ 【去系统清理存储】引导按钮</td>
+    </tr>
+    <tr>
+      <td>系统未知报错</td>
+      <td>展示错误文案 + 【重试保存】按钮，停留当前页不跳转</td>
+    </tr>
+    <tr>
+      <td>部分照片保存失败</td>
+      <td>展示「X 张成功 / Y 张失败」+ 【重试失败项】入口</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════ 4. PRIORITY ══════════════ -->
+<div class="section-header" id="priority">
+  <h2>整改优先级</h2>
+  <p>P0 影响上架 · P1 影响可用性 · P2 体验优化</p>
+</div>
+<div class="priority-grid">
+  <div class="prio-card p0">
+    <div class="prio-label">P0 · 立刻改</div>
+    <ul>
+      <li>流程顺序：先权限后资料</li>
+      <li>昵称必填，红框 + 悬浮提示（不禁用按钮）</li>
+      <li>拒绝权限从设置返回 → 强制落回权限页</li>
+      <li>权限弹窗前置说明文案</li>
+      <li>隐私协议三处锚点（启动/权限/设置）</li>
+    </ul>
+  </div>
+  <div class="prio-card p1">
+    <div class="prio-label">P1 · 迭代优化</div>
+    <ul>
+      <li>保存失败 4 种精细分类</li>
+      <li>未识别宝宝三选项弹窗（含取消）</li>
+      <li>分享失败/取消/成功分级 Toast</li>
+      <li>拒绝权限折中方案：手动上传单张</li>
+      <li>重新整理权限失效分支</li>
+      <li>新增宝宝跳转前权限校验弹窗</li>
+    </ul>
+  </div>
+  <div class="prio-card p2">
+    <div class="prio-label">P2 · 补充完善</div>
+    <ul>
+      <li>新增宝宝全链路 + 多宝宝切换缓存</li>
+      <li>扫描中断续扫（本地缓存进度）</li>
+      <li>空相册双路径 / 全删空结果双按钮</li>
+      <li>引导三类断点精细化</li>
+      <li>宝宝资料草稿回填</li>
+      <li>重新走新手引导开关</li>
+      <li>多宝宝混合权限 Banner 切换</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════ 5. ARCHITECTURE ══════════════ -->
+<div class="section-header" id="arch">
+  <h2>项目架构</h2>
+  <p>MVVM · actor Services · @MainActor ViewModels</p>
+</div>
+<div class="arch-grid">
+  <div class="arch-card">
+    <div class="arch-title">Features/</div>
+    <ul>
+      <li><span class="f">Onboarding/</span> <span class="n">PAGE 1 启动说明</span></li>
+      <li><span class="f">Permission/</span> <span class="n">PAGE 3（流程第 2 步）</span></li>
+      <li><span class="f">BabyProfile/</span> <span class="n">PAGE 2（流程第 3 步）</span></li>
+      <li><span class="f">Scanning/</span> <span class="n">PAGE 4 扫描进度</span></li>
+      <li><span class="f">Results/</span> <span class="n">PAGE 5 Top 20 结果</span></li>
+      <li><span class="f">SaveComplete/</span> <span class="n">PAGE 6 保存完成</span></li>
+      <li><span class="f">ManualUpload/</span> <span class="n">手动上传单张（拒绝权限折中）</span></li>
+    </ul>
+  </div>
+  <div class="arch-card">
+    <div class="arch-title">Services/</div>
+    <ul>
+      <li><span class="f">PhotoLibraryService</span> <span class="n">PhotoKit 封装，actor</span></li>
+      <li><span class="f">ScoringEngine</span> <span class="n">Vision 评分，actor</span></li>
+      <li><span class="f">AlbumSaveService</span> <span class="n">写入「稚光精选」</span></li>
+      <li><span class="f">ScanStateCache</span> <span class="n">断点续扫，本地持久化</span></li>
+      <li><span class="f">PermissionStateStore</span> <span class="n">全局权限状态，@EnvironmentObject</span></li>
+      <li><span class="f">BabyProfileStore</span> <span class="n">多宝宝数据 + 草稿管理</span></li>
+    </ul>
+    <div class="arch-title" style="margin-top:10px;">Models/</div>
+    <ul>
+      <li><span class="f">BabyProfile</span> <span class="n">nickname(必填), birthday, gender</span></li>
+      <li><span class="f">PhotoAsset / PhotoScore / ScanResult</span></li>
+      <li><span class="f">PermissionState</span> <span class="n">.full / .limited / .denied</span></li>
+    </ul>
+  </div>
+</div>
+<div class="data-flow">
+  <span class="df-hi">PhotoLibraryService</span> <span class="df-ar">→</span> [PhotoAsset] <span class="df-ar">→</span> <span class="df-hi">ScoringEngine</span> <span class="df-ar">→</span> [PhotoScore] <span class="df-ar">→</span> <span class="df-hi">ScanningViewModel</span><br>
+  <span class="df-ar">→</span> ScanResult <span class="df-ar">→</span> <span class="df-hi">ResultsViewModel</span> <span class="df-ar">→</span> <span class="df-hi">AlbumSaveService</span> <span class="df-ar">→</span> <span class="df-hi">SaveCompleteViewModel</span><br>
+  <span class="df-hi">PermissionStateStore</span> <span class="df-ar">→（@EnvironmentObject）→</span> 全链路 Banner 状态透传<br>
+  <span class="df-hi">ScanStateCache</span> <span class="df-ar">→</span> 断点续扫 &amp; 草稿回填
+</div>
+
+<!-- ══════════════ 6. SCORING ══════════════ -->
+<div class="section-header" id="scoring">
+  <h2>评分算法</h2>
+  <p>Vision 框架 · 规则评分 · iOS 16+ · 无需外部模型</p>
+</div>
+<div style="max-width: 680px; margin: 0 auto; overflow-x: auto;">
+  <table class="data-table">
+    <tr><th>维度</th><th>权重</th><th>实现方式</th></tr>
     <tr>
       <td>人脸 / 宝宝置信度</td>
       <td><span class="weight">30%</span></td>
-      <td>VNDetectFaceRectanglesRequest · 检测是否有人脸、人脸大小占比<span class="api-tag">Vision</span></td>
+      <td>VNDetectFaceRectanglesRequest · 人脸大小占画面比例<span class="api">Vision</span></td>
     </tr>
     <tr>
       <td>清晰度</td>
       <td><span class="weight">25%</span></td>
-      <td>图像拉普拉斯方差（缩略图计算），严重模糊直接过滤</td>
+      <td>拉普拉斯方差（缩略图计算），严重模糊直接过滤</td>
     </tr>
     <tr>
       <td>表情 / 眼睛状态</td>
       <td><span class="weight">20%</span></td>
-      <td>VNDetectFaceLandmarksRequest · 眼睛开合、嘴角上扬<span class="api-tag">Vision</span></td>
+      <td>VNDetectFaceLandmarksRequest · 眼睛开合、嘴角上扬<span class="api">Vision</span></td>
     </tr>
     <tr>
       <td>构图完整度</td>
@@ -456,33 +520,59 @@
       <td>人脸不超出画面边缘、主体居中比例</td>
     </tr>
     <tr>
-      <td>场景意义</td>
+      <td>场景意义 / 连拍惩罚</td>
       <td><span class="weight">10%</span></td>
-      <td>连拍分组（拍摄时间差 &lt; 2s）中非最高分照片降权</td>
-    </tr>
-    <tr>
-      <td>重复 / 连拍惩罚</td>
-      <td>扣分</td>
-      <td>同组最多保留 2 张，其余按分差递减</td>
+      <td>拍摄时间差 &lt; 2s 视为连拍，同组最多保留 2 张，其余递减扣分</td>
     </tr>
   </table>
-
-  <div style="margin-top: 16px; background: #111; border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px 18px;">
-    <div style="color: #666; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-bottom: 10px;">扫描流程（7 步）</div>
-    <div style="font-size: 12px; color: #aaa; line-height: 2.2;">
-      1. 读取最近 <strong style="color:#fff">90 天 或 1000 张</strong>（取并集上限）<br>
-      2. 过滤截图、二维码、视频、时长 &gt; 0 的资源<br>
-      3. 分批（每批 50 张）加载缩略图，计算清晰度，丢弃方差 &lt; 阈值的照片<br>
-      4. 对剩余照片跑 VNDetectFaceRectanglesRequest，过滤无人脸<br>
-      5. 对候选照片跑 VNDetectFaceLandmarksRequest，获取表情分<br>
-      6. 按拍摄时间差做连拍分组，组内限制保留数量<br>
-      7. 综合评分 → 排序 → 取前 20
-    </div>
+</div>
+<div style="max-width: 680px; margin: 12px auto 0;">
+  <div class="info-box">
+    <strong>扫描范围：</strong>最近 <span class="hi">90 天</span> 与最近 <span class="hi">1000 张</span> 取<span class="hi">并集</span>（两个条件满足其一即纳入，上限 1000 张）<br>
+    <strong>7 步流程：</strong>读取照片 → 过滤截图/二维码/视频 → 分批 50 张计算清晰度 → VNDetectFaceRectanglesRequest 过滤无人脸 → VNDetectFaceLandmarksRequest 获取表情分 → 连拍分组 → 综合评分排序取前 20
   </div>
 </div>
 
-<div style="text-align: center; margin-top: 40px; color: #333; font-size: 12px; padding-bottom: 20px;">
-  稚光 iOS MVP · 设计文档 · 2026-06-05
+<!-- ══════════════ 7. UX MICRO ══════════════ -->
+<div class="section-header" id="ux">
+  <h2>交互体验细节</h2>
+  <p>用户体感升级 · 全局通用规则</p>
+</div>
+<div class="ux-grid">
+  <div class="ux-card">
+    <div class="ux-icon">💬</div>
+    <div class="ux-title">弹窗统一交互</div>
+    <div class="ux-desc">点击空白区域可关闭弹窗，<strong style="color:#f44336">权限强制弹窗除外</strong>（必须二选一）</div>
+  </div>
+  <div class="ux-card">
+    <div class="ux-icon">✨</div>
+    <div class="ux-title">按钮状态动效</div>
+    <div class="ux-desc">条件不满足时按钮置灰；点击有轻弹反馈；不禁用按钮，改为触发内联错误提示</div>
+  </div>
+  <div class="ux-card">
+    <div class="ux-icon">💾</div>
+    <div class="ux-title">全链路状态记忆</div>
+    <div class="ux-desc">未点最终「保存精选」前，所有扫描结果、筛选状态、宝宝信息草稿全部本地缓存</div>
+  </div>
+  <div class="ux-card">
+    <div class="ux-icon">🔒</div>
+    <div class="ux-title">隐私合规三锚点</div>
+    <div class="ux-desc">启动页底部 / 权限页底部 / 设置页，三处可查看完整隐私协议，满足 App Store 审核</div>
+  </div>
+  <div class="ux-card">
+    <div class="ux-icon">🔄</div>
+    <div class="ux-title">新手引导重置</div>
+    <div class="ux-desc">设置内提供「重新走新手引导」开关，老用户主动回启动说明页</div>
+  </div>
+  <div class="ux-card">
+    <div class="ux-icon">👶</div>
+    <div class="ux-title">多宝宝切换缓存</div>
+    <div class="ux-desc">切换宝宝时保留各自的移除/精选状态，不重置，无感切换</div>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 52px; color: #222; font-size: 11px; padding-bottom: 20px;">
+  稚光 iOS MVP · 设计文档 v3 · 2026-06-05
 </div>
 
 </body>
