@@ -28,6 +28,7 @@ struct ZhiguangApp: App {
 struct RootView: View {
     @EnvironmentObject var permissionStore: PermissionStateStore
     @EnvironmentObject var babyProfileStore: BabyProfileStore
+    @EnvironmentObject var deps: AppDependencies
     @State private var path = NavigationPath()
 
     var body: some View {
@@ -37,7 +38,15 @@ struct RootView: View {
                     route.view(path: $path)
                 }
         }
-        .onAppear { permissionStore.refreshFromSystem() }
+        .onAppear {
+            permissionStore.refreshFromSystem()
+            // Returning user fast-path: skip onboarding if we already have data
+            if permissionStore.canProceed,
+               let profile = babyProfileStore.profiles.last,
+               deps.scanStateCache.load(for: profile.id) != nil {
+                path.append(AppRoute.results(babyId: profile.id))
+            }
+        }
     }
 }
 

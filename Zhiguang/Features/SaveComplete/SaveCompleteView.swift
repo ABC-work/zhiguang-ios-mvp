@@ -1,19 +1,41 @@
 // Zhiguang/Features/SaveComplete/SaveCompleteView.swift
 import SwiftUI
 
+// Outer: has @EnvironmentObject access, passes real service to inner
 struct SaveCompleteView: View {
     @Binding var path: NavigationPath
     let babyId: UUID
     let savedCount: Int
-    @StateObject private var vm: SaveCompleteViewModel
+    let selectedIds: [String]
+    @EnvironmentObject var deps: AppDependencies
 
-    init(path: Binding<NavigationPath>, babyId: UUID, savedCount: Int, selectedIds: [String]) {
+    var body: some View {
+        SaveCompleteContent(
+            path: $path,
+            babyId: babyId,
+            savedCount: savedCount,
+            selectedIds: selectedIds,
+            saveService: deps.albumSaveService
+        )
+    }
+}
+
+// Inner: receives deps explicitly
+private struct SaveCompleteContent: View {
+    @Binding var path: NavigationPath
+    let babyId: UUID
+    let savedCount: Int
+    @StateObject var vm: SaveCompleteViewModel
+
+    init(path: Binding<NavigationPath>, babyId: UUID, savedCount: Int,
+         selectedIds: [String], saveService: AlbumSaveServiceProtocol) {
         self._path = path
         self.babyId = babyId
         self.savedCount = savedCount
         self._vm = StateObject(wrappedValue: SaveCompleteViewModel(
             babyId: babyId,
-            selectedIds: selectedIds
+            selectedIds: selectedIds,
+            saveService: saveService
         ))
     }
 
