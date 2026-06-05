@@ -1,22 +1,42 @@
 // Zhiguang/Features/Scanning/ScanningView.swift
 import SwiftUI
 
+// Outer: has @EnvironmentObject access, builds VM with real deps
 struct ScanningView: View {
     @Binding var path: NavigationPath
     let babyId: UUID
-    @EnvironmentObject var permissionStore: PermissionStateStore
     @EnvironmentObject var deps: AppDependencies
-    @StateObject private var vm: ScanningViewModel
+    @EnvironmentObject var permissionStore: PermissionStateStore
 
-    init(path: Binding<NavigationPath>, babyId: UUID) {
+    var body: some View {
+        ScanningContent(
+            path: $path,
+            babyId: babyId,
+            photoService: deps.photoLibraryService,
+            scoringEngine: deps.scoringEngine,
+            cache: deps.scanStateCache
+        )
+    }
+}
+
+// Inner: accepts deps as explicit params, uses @StateObject safely
+private struct ScanningContent: View {
+    @Binding var path: NavigationPath
+    let babyId: UUID
+    @EnvironmentObject var permissionStore: PermissionStateStore
+    @StateObject var vm: ScanningViewModel
+
+    init(path: Binding<NavigationPath>, babyId: UUID,
+         photoService: PhotoLibraryServiceProtocol,
+         scoringEngine: ScoringEngine,
+         cache: ScanStateCache) {
         self._path = path
         self.babyId = babyId
-        // vm initialized in onAppear with real deps
         self._vm = StateObject(wrappedValue: ScanningViewModel(
             babyId: babyId,
-            photoService: PhotoLibraryService(),
-            scoringEngine: ScoringEngine(),
-            cache: ScanStateCache()
+            photoService: photoService,
+            scoringEngine: scoringEngine,
+            cache: cache
         ))
     }
 
@@ -99,7 +119,7 @@ struct ScanningView: View {
                 }
                 Button("全量扩容扫描") { Task { await vm.startScan() } }
                     .buttonStyle(.bordered)
-                Button("取消，返回上次结果") { path.removeLast() }
+                Button("返回上次结果") { path.removeLast() }
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 24)

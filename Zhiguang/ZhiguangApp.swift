@@ -47,7 +47,7 @@ enum AppRoute: Hashable {
     case babyProfile(isNewBaby: Bool)
     case scanning(babyId: UUID)
     case results(babyId: UUID)
-    case saveComplete(babyId: UUID, savedCount: Int)
+    case saveComplete(babyId: UUID, savedCount: Int, selectedIds: [String])
     case manualUpload
 
     @ViewBuilder
@@ -61,8 +61,8 @@ enum AppRoute: Hashable {
             ScanningView(path: path, babyId: babyId)
         case .results(let babyId):
             ResultsView(path: path, babyId: babyId)
-        case .saveComplete(let babyId, let count):
-            SaveCompleteView(path: path, babyId: babyId, savedCount: count)
+        case .saveComplete(let babyId, let count, let ids):
+            SaveCompleteView(path: path, babyId: babyId, savedCount: count, selectedIds: ids)
         case .manualUpload:
             ManualUploadView(path: path)
         }

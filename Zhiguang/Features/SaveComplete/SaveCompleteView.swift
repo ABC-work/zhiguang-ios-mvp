@@ -5,17 +5,15 @@ struct SaveCompleteView: View {
     @Binding var path: NavigationPath
     let babyId: UUID
     let savedCount: Int
-    @EnvironmentObject var deps: AppDependencies
     @StateObject private var vm: SaveCompleteViewModel
 
-    init(path: Binding<NavigationPath>, babyId: UUID, savedCount: Int) {
+    init(path: Binding<NavigationPath>, babyId: UUID, savedCount: Int, selectedIds: [String]) {
         self._path = path
         self.babyId = babyId
         self.savedCount = savedCount
-        // selectedIds loaded from cache — deps not available in init, so load lazily
         self._vm = StateObject(wrappedValue: SaveCompleteViewModel(
             babyId: babyId,
-            selectedIds: []
+            selectedIds: selectedIds
         ))
     }
 
@@ -36,28 +34,7 @@ struct SaveCompleteView: View {
         }
         .navigationTitle("").navigationBarHidden(true)
         .toast(message: $vm.toast)
-        .task {
-            // Load selected IDs from cache, then save
-            let result = deps.scanStateCache.load(for: babyId)
-            let ids = result?.selectedAssetIds ?? []
-            let svc = deps.albumSaveService
-            let cache = deps.scanStateCache
-            // Re-create VM with real data
-            // (MVP simplification: use the injected service directly)
-            let saveResult = await svc.save(assetIds: ids)
-            if saveResult.isFullSuccess {
-                vm.saveState = .success(count: saveResult.succeeded.count)
-            } else if saveResult.isPartialSuccess {
-                vm.saveState = .partialFailure(
-                    succeeded: saveResult.succeeded.count,
-                    failed: saveResult.failed.count,
-                    failedIds: saveResult.failed.map(\.assetId)
-                )
-            } else {
-                let reason = saveResult.failed.first?.reason ?? .unknown
-                vm.saveState = .fullFailure(reason)
-            }
-        }
+        .task { await vm.performSave() }
     }
 
     private var savingContent: some View {
@@ -93,10 +70,6 @@ struct SaveCompleteView: View {
                     .buttonStyle(.bordered).frame(maxWidth: .infinity)
                     Button("新增宝宝") { path.append(AppRoute.babyProfile(isNewBaby: true)) }
                         .buttonStyle(.bordered).frame(maxWidth: .infinity)
-                }
-                if vm.showHomeButton {
-                    Button("回到首页") { path = NavigationPath() }
-                        .buttonStyle(.borderless).foregroundColor(.secondary)
                 }
                 Button("重新整理") {
                     path.append(AppRoute.scanning(babyId: babyId))
