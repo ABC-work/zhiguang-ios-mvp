@@ -2,6 +2,7 @@
 import XCTest
 @testable import Zhiguang
 
+@MainActor
 final class BabyProfileViewModelTests: XCTestCase {
     func test_canProceed_falseWhenNicknameEmpty() {
         let vm = BabyProfileViewModel(store: BabyProfileStore(defaults: UserDefaults(suiteName: UUID().uuidString)!))

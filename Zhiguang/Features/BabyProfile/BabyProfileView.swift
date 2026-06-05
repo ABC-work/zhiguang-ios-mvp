@@ -1,17 +1,28 @@
 // Zhiguang/Features/BabyProfile/BabyProfileView.swift
 import SwiftUI
 
+// Container view: has access to @EnvironmentObject, creates VM with real store
 struct BabyProfileView: View {
     @Binding var path: NavigationPath
     let isNewBaby: Bool
     @EnvironmentObject var babyStore: BabyProfileStore
-    @StateObject private var vm: BabyProfileViewModel
+
+    var body: some View {
+        BabyProfileContent(path: $path, isNewBaby: isNewBaby, store: babyStore)
+    }
+}
+
+// Inner view: receives store explicitly, can use @StateObject safely
+private struct BabyProfileContent: View {
+    @Binding var path: NavigationPath
+    let isNewBaby: Bool
+    @StateObject var vm: BabyProfileViewModel
     @State private var showDatePicker = false
 
-    init(path: Binding<NavigationPath>, isNewBaby: Bool) {
+    init(path: Binding<NavigationPath>, isNewBaby: Bool, store: BabyProfileStore) {
         self._path = path
         self.isNewBaby = isNewBaby
-        self._vm = StateObject(wrappedValue: BabyProfileViewModel(store: BabyProfileStore()))
+        self._vm = StateObject(wrappedValue: BabyProfileViewModel(store: store))
     }
 
     var body: some View {
@@ -106,7 +117,7 @@ struct BabyProfileView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("跳过") {
-                    navigateNext()
+                    skipToScanning()
                 }
                 .foregroundColor(.secondary)
             }
@@ -123,10 +134,20 @@ struct BabyProfileView: View {
         .onDisappear { vm.saveDraft() }
     }
 
-    private func navigateNext() {
-        let _ = vm.tryProceed()
-        if let id = vm.currentProfileId() {
+    // Bug 3 fix: skip navigates unconditionally using existing or new profile
+    private func skipToScanning() {
+        // Try to save what we have; if nickname empty, create a default profile
+        if vm.tryProceed(), let id = vm.currentProfileId() {
             path.append(AppRoute.scanning(babyId: id))
+        } else if let existingId = vm.currentProfileId() {
+            // Already have a profile from a previous session
+            path.append(AppRoute.scanning(babyId: existingId))
+        } else {
+            // Create a placeholder profile so scanning can proceed
+            vm.nickname = "我的宝宝"
+            if vm.tryProceed(), let id = vm.currentProfileId() {
+                path.append(AppRoute.scanning(babyId: id))
+            }
         }
     }
 

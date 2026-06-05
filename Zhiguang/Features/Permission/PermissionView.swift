@@ -1,16 +1,13 @@
 // Zhiguang/Features/Permission/PermissionView.swift
 import SwiftUI
+import UIKit
 
 struct PermissionView: View {
     @Binding var path: NavigationPath
     @EnvironmentObject var permissionStore: PermissionStateStore
-    @StateObject private var vm: PermissionViewModel
+    @State private var isRequesting = false
+    @State private var showDeniedAlert = false
     @State private var showManualUploadSheet = false
-
-    init(path: Binding<NavigationPath>) {
-        self._path = path
-        self._vm = StateObject(wrappedValue: PermissionViewModel(permissionStore: PermissionStateStore()))
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,8 +40,15 @@ struct PermissionView: View {
 
             // Buttons
             VStack(spacing: 10) {
-                PrimaryButton(title: "授权访问相册", isLoading: vm.isRequesting) {
-                    Task { await vm.requestPermission() }
+                PrimaryButton(title: "授权访问相册", isLoading: isRequesting) {
+                    Task {
+                        isRequesting = true
+                        await permissionStore.requestAccess()
+                        isRequesting = false
+                        if permissionStore.isDenied {
+                            showDeniedAlert = true
+                        }
+                    }
                 }
                 Button("查看完整隐私政策") {}
                     .font(.footnote).foregroundColor(.secondary)
@@ -58,8 +62,8 @@ struct PermissionView: View {
                 path.append(AppRoute.babyProfile(isNewBaby: false))
             }
         }
-        .alert("相册权限未开启", isPresented: $vm.showDeniedAlert) {
-            Button("前往系统设置") { vm.openSystemSettings() }
+        .alert("相册权限未开启", isPresented: $showDeniedAlert) {
+            Button("前往系统设置") { openSystemSettings() }
             Button("手动上传单张照片") { showManualUploadSheet = true }
             Button("取消", role: .cancel) {}
         } message: {
@@ -81,5 +85,10 @@ struct PermissionView: View {
             Image(systemName: icon).foregroundColor(.green)
             Text(text).font(.subheadline)
         }
+    }
+
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
