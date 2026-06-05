@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>稚光 iOS MVP · 界面线框图</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #111;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 40px 20px 80px;
+}
+h1 { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.meta { text-align: center; color: #555; font-size: 12px; margin-bottom: 48px; }
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 48px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Phone shell */
+.phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.phone-label { font-size: 11px; font-weight: 700; color: #555; letter-spacing: 1.5px; text-transform: uppercase; }
+.phone-title { font-size: 14px; font-weight: 700; color: #ccc; }
+.phone-sub { font-size: 11px; color: #444; text-align: center; margin-top: 2px; max-width: 260px; line-height: 1.5; }
+
+.phone {
+  width: 270px;
+  height: 585px;
+  background: #1c1c1e;
+  border-radius: 44px;
+  border: 2px solid #333;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px #ffffff08;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+/* Notch */
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 100px; height: 28px;
+  background: #1c1c1e;
+  border-radius: 0 0 20px 20px;
+  z-index: 10;
+  border-bottom: 1px solid #333;
+}
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 38px 18px 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  margin-bottom: 16px;
+  font-size: 10px;
+  color: #888;
+  flex-shrink: 0;
+}
+.status-time { font-weight: 600; color: #ccc; font-size: 12px; }
+.status-icons { display: flex; gap: 4px; align-items: center; }
+
+/* Nav bar */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.nav-back { color: #6c63ff; font-size: 13px; font-weight: 500; }
+.nav-title { font-size: 15px; font-weight: 700; color: #fff; }
+.nav-action { color: #6c63ff; font-size: 12px; font-weight: 500; }
+
+/* Banner */
+.banner {
+  background: #3a3200;
+  border-left: 3px solid #ffeb3b;
+  padding: 8px 10px;
+  font-size: 10px;
+  color: #ffeb3b;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* Hero icon area */
+.hero { text-align: center; padding: 12px 0 16px; flex-shrink: 0; }
+.hero-icon { font-size: 52px; line-height: 1; margin-bottom: 8px; }
+.hero-title { font-size: 17px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 6px; }
+.hero-body { font-size: 11px; color: #888; line-height: 1.6; }
+
+/* Bullet list */
+.bullets { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.bullet { display: flex; gap: 10px; align-items: flex-start; }
+.bullet-dot { font-size: 16px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+.bullet-text { font-size: 11px; color: #ccc; line-height: 1.5; }
+
+/* Permission cards */
+.perm-box {
+  background: #2c2c2e;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.perm-icon { font-size: 28px; text-align: center; margin-bottom: 6px; }
+.perm-title { font-size: 13px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 4px; }
+.perm-desc { font-size: 10px; color: #888; text-align: center; line-height: 1.5; }
+
+/* Input field */
+.field { margin-bottom: 10px; flex-shrink: 0; }
+.field-label { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
+.field-input {
+  background: #2c2c2e;
+  border: 1px solid #3a3a3c;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #fff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field-input.error { border-color: #f44336; }
+.field-placeholder { color: #555; }
+.field-value { color: #fff; }
+.field-hint { font-size: 10px; color: #f44336; margin-top: 3px; display: none; }
+.field-hint.show { display: block; }
+.field-note { font-size: 10px; color: #555; margin-top: 3px; line-height: 1.4; }
+.required-star { color: #f44336; margin-left: 2px; }
+
+/* Row option */
+.row-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2c2c2e;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #fff;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.row-chevron { color: #555; font-size: 14px; }
+
+/* Progress */
+.progress-stage { font-size: 11px; color: #888; margin-bottom: 6px; flex-shrink: 0; }
+.progress-bar-wrap { background: #2c2c2e; border-radius: 99px; height: 6px; margin-bottom: 12px; flex-shrink: 0; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6c63ff, #a78bfa); }
+.progress-count { font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 2px; flex-shrink: 0; }
+.progress-label { font-size: 11px; color: #555; text-align: center; margin-bottom: 12px; flex-shrink: 0; }
+.stage-list { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.stage-item { display: flex; align-items: center; gap: 10px; font-size: 11px; }
+.stage-dot { width: 8px; height: 8px; border-radius: 99px; flex-shrink: 0; }
+.stage-dot.done { background: #4caf50; }
+.stage-dot.active { background: #6c63ff; box-shadow: 0 0 6px #6c63ff88; }
+.stage-dot.pending { background: #333; }
+.stage-text { color: #ccc; }
+.stage-text.pending-text { color: #444; }
+
+/* Photo grid */
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-bottom: 8px; flex-shrink: 0; }
+.photo-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.photo-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.photo-score {
+  position: absolute; bottom: 3px; right: 3px;
+  background: rgba(0,0,0,.7);
+  color: #fff; font-size: 8px; font-weight: 700;
+  padding: 1px 4px; border-radius: 4px;
+}
+.photo-remove {
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,.6);
+  color: #aaa; font-size: 10px;
+  width: 16px; height: 16px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-cell.removed { opacity: 0.3; }
+.photo-cell.removed .photo-bg { filter: grayscale(1); }
+
+/* Tag chips */
+.tag-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; flex-shrink: 0; }
+.tag {
+  background: #6c63ff22;
+  border: 1px solid #6c63ff55;
+  color: #a78bfa;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 14px;
+  padding: 13px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-primary { background: linear-gradient(135deg, #6c63ff, #a78bfa); color: #fff; }
+.btn-secondary { background: #2c2c2e; color: #ccc; font-size: 13px; padding: 10px; border-radius: 12px; }
+.btn-ghost { color: #6c63ff; font-size: 12px; text-align: center; padding: 8px; flex-shrink: 0; }
+.btn-danger { background: #f4433622; border: 1px solid #f4433655; color: #f44336; border-radius: 12px; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; }
+
+/* Spacer */
+.spacer { flex: 1; }
+
+/* Save complete */
+.success-ring {
+  width: 72px; height: 72px; border-radius: 99px;
+  background: linear-gradient(135deg, #6c63ff33, #a78bfa33);
+  border: 2px solid #6c63ff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 10px;
+  flex-shrink: 0;
+}
+
+/* Divider */
+.divider { height: 1px; background: #2a2a2a; margin: 8px 0; flex-shrink: 0; }
+
+/* Footer note */
+.footer-note { font-size: 9px; color: #444; text-align: center; line-height: 1.5; flex-shrink: 0; }
+
+/* Annotation system */
+.section-title {
+  max-width: 1200px; margin: 0 auto 24px;
+  font-size: 13px; font-weight: 700; color: #444; letter-spacing: 1.5px; text-transform: uppercase;
+  border-top: 1px solid #1e1e1e; padding-top: 40px;
+}
+.section-title:first-of-type { border-top: none; padding-top: 0; }
+
+/* Colors for photo cells */
+.c1 { background: #1a1a2e; }
+.c2 { background: #1a2a1a; }
+.c3 { background: #2a1a1a; }
+.c4 { background: #2a2a1a; }
+.c5 { background: #1a2a2a; }
+.c6 { background: #2a1a2a; }
+</style>
+</head>
+<body>
+
+<h1>稚光 iOS MVP · 界面线框图</h1>
+<p class="meta">v3 设计规范 · SwiftUI · iOS 16+ · 2026-06-05</p>
+
+<!-- ══ ROW 1: Onboarding + Permission states ══ -->
+<div class="section-title">引导流程 · PAGE 1 启动说明 / PAGE 3 相册权限</div>
+<div class="grid">
+
+  <!-- PAGE 1: Onboarding -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 1</span>
+    <span class="phone-title">启动说明页</span>
+    <span class="phone-sub">首次打开，介绍核心理念</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="hero">
+          <div class="hero-icon">🌟</div>
+          <div class="hero-title">从几千张照片里<br>挑出宝宝最值得留的 20 张</div>
+          <div class="hero-body">本地分析，照片不会默认上传</div>
+        </div>
+        <div class="bullets">
+          <div class="bullet"><span class="bullet-dot">📷</span><div class="bullet-text">自动扫描最近相册，无需手动挑选</div></div>
+          <div class="bullet"><span class="bullet-dot">🧠</span><div class="bullet-text">AI 识别宝宝照片，过滤模糊和重复</div></div>
+          <div class="bullet"><span class="bullet-dot">🔒</span><div class="bullet-text">所有处理在设备本地完成，不上传</div></div>
+          <div class="bullet"><span class="bullet-dot">💾</span><div class="bullet-text">一键保存到「稚光精选」相册</div></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn btn-primary">开始整理</div>
+        <div class="btn-ghost">查看隐私说明</div>
+        <div class="footer-note">所有图片仅本地设备处理，不上传云端<br>符合 Apple 隐私规范</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Permission - request -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 3</span>
+    <span class="phone-title">相册权限页</span>
+    <span class="phone-sub">申请权限前提前说明，提升授权率</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="nav-bar">
+          <span class="nav-back">‹ 返回</span>
+          <span class="nav-title"></span>
+          <span></span>
+        </div>
+        <div class="hero" style="padding-top:4px;">
+          <div class="hero-icon">📂</div>
+          <div class="hero-title">需要访问您的相册</div>
+          <div class="hero-body">稚光需要读取您的照片，在本地识别并筛选宝宝照片</div>
+        </div>
+        <div class="perm-box">
+          <div style="font-size:10px;font-weight:700;color:#555;letter-spacing:1px;margin-bottom:10px;">我们承诺</div>
+          <div class="bullet" style="margin-bottom:6px;"><span class="bullet-dot" style="font-size:13px;">✅</span><div class="bullet-text">所有分析在设备本地完成</div></div>
+          <div class="bullet" style="margin-bottom:6px;"><span class="bullet-dot" style="font-size:13px;">✅</span><div class="bullet-text">照片不会自动上传到服务器</div></div>
+          <div class="bullet"><span class="bullet-dot" style="font-size:13px;">✅</span><div class="bullet-text">不会删除您的任何照片</div></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">授权访问相册</div>
+        <div class="btn-ghost">查看完整隐私政策</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Permission - partial -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 3</span>
+    <span class="phone-title">相册权限页 · 部分授权</span>
+    <span class="phone-sub">放行，全链路挂载黄色 Banner</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="banner">⚠ 仅可访问部分相册，扫描范围受限，照片筛选结果可能不完整</div>
+        <div class="hero" style="padding-top:0;">
+          <div class="hero-icon" style="font-size:36px;">⚠️</div>
+          <div class="hero-title" style="font-size:15px;">仅获得部分相册权限</div>
+          <div class="hero-body">您选择了部分照片。可以继续，但 AI 只能从已授权的范围内筛选宝宝照片</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">继续，用已授权照片</div>
+        <div class="btn btn-secondary">去系统设置开启全量权限</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Permission - denied -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 3</span>
+    <span class="phone-title">相册权限页 · 拒绝权限</span>
+    <span class="phone-sub">折中方案：手动上传单张照片</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="hero" style="padding-top:8px;">
+          <div class="hero-icon" style="font-size:36px;">🔒</div>
+          <div class="hero-title" style="font-size:15px;">相册权限未开启</div>
+          <div class="hero-body">缺少相册权限无法自动扫描相册，可去设置开启，或手动传图</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">前往系统设置开启权限</div>
+        <div class="btn btn-secondary" style="margin-bottom:8px;">手动上传单张照片</div>
+        <div class="footer-note">从系统设置返回后，将重新检测权限状态</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ══ ROW 2: Baby Profile + Scanning ══ -->
+<div class="section-title">录入 & 扫描 · PAGE 2 宝宝资料 / PAGE 4 扫描进度</div>
+<div class="grid">
+
+  <!-- PAGE 2: Baby profile -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 2</span>
+    <span class="phone-title">宝宝资料页</span>
+    <span class="phone-sub">昵称必填，生日/性别可选</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="nav-bar">
+          <span class="nav-back">‹ 返回</span>
+          <span class="nav-title">宝宝资料</span>
+          <span class="nav-action">跳过</span>
+        </div>
+        <div style="font-size:11px;color:#555;margin-bottom:14px;">填写宝宝信息，帮助 AI 更准确地识别照片</div>
+
+        <div class="field">
+          <div class="field-label">宝宝昵称 <span class="required-star">*</span></div>
+          <div class="field-input error">
+            <span class="field-placeholder">请输入昵称</span>
+          </div>
+          <div class="field-hint show">请填写宝宝昵称，用于照片分组</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">出生日期</div>
+          <div class="field-input">
+            <span class="field-placeholder">选择日期</span>
+            <span style="color:#555">›</span>
+          </div>
+          <div class="field-note">完善生日可精准筛选对应月龄成长照片</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">性别</div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:#2c2c2e;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#555;">👦 男宝</div>
+            <div style="flex:1;background:#2c2c2e;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#555;">👧 女宝</div>
+            <div style="flex:1;background:#6c63ff22;border:1px solid #6c63ff55;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a78bfa;">暂不填</div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+        <div class="btn btn-primary">下一步，开始扫描</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Baby profile filled -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 2</span>
+    <span class="phone-title">宝宝资料页 · 已填写</span>
+    <span class="phone-sub">昵称填写后按钮可点击</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="nav-bar">
+          <span class="nav-back">‹ 返回</span>
+          <span class="nav-title">宝宝资料</span>
+          <span></span>
+        </div>
+        <div style="font-size:11px;color:#555;margin-bottom:14px;">填写宝宝信息，帮助 AI 更准确地识别照片</div>
+
+        <div class="field">
+          <div class="field-label">宝宝昵称 <span class="required-star">*</span></div>
+          <div class="field-input" style="border-color:#6c63ff55;">
+            <span class="field-value">小豆豆</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">出生日期</div>
+          <div class="field-input">
+            <span class="field-value">2023 年 3 月 15 日</span>
+            <span style="color:#555">›</span>
+          </div>
+          <div class="field-note" style="color:#6c63ff88;">已填写，可筛选月龄成长照片 ✓</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">性别</div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:#6c63ff22;border:1px solid #6c63ff55;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a78bfa;">👧 女宝</div>
+            <div style="flex:1;background:#2c2c2e;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#555;">👦 男宝</div>
+            <div style="flex:1;background:#2c2c2e;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#555;">暂不填</div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+        <div class="btn btn-primary">下一步，开始扫描</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Scanning in progress -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 4</span>
+    <span class="phone-title">扫描进度页 · 扫描中</span>
+    <span class="phone-sub">分阶段展示，常驻取消按钮</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">📶 🔋</div>
+        </div>
+        <div class="nav-bar">
+          <span></span>
+          <span class="nav-title">正在分析</span>
+          <span class="nav-action" style="color:#888;">取消</span>
+        </div>
+        <div class="progress-count">637</div>
+        <div class="progress-label">已扫描 / 共 1000 张</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:63%"></div></div>
+        <div class="progress-stage">当前阶段：识别人像中…</div>
+
+        <div class="stage-list">
+          <div class="stage-item"><div class="stage-dot done"></div><span class="stage-text">✓ 读取照片（1000 张）</span></div>
+          <div class="stage-item"><div class="stage-dot done"></div><span class="stage-text">✓ 过滤截图和二维码</span></div>
+          <div class="stage-item"><div class="stage-dot active"></div><span class="stage-text" style="color:#a78bfa;">● 识别人像中（637 / 1000）</span></div>
+          <div class="stage-item"><div class="stage-dot pending"></div><span class="stage-text pending-text">· 清晰度评分</span></div>
+          <div class="stage-item"><div class="stage-dot pending"></div><span class="stage-text pending-text">· 生成 Top 20</span></div>
+        </div>
+
+        <div class="spacer"></div>
+        <div style="background:#1a1a2e;border-radius:10px;padding:8px 12px;font-size:10px;color:#6c63ff;text-align:center;">
+          🔒 所有分析在设备本地完成，照片不会上传
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: No baby found dialog -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 4</span>
+    <span class="phone-title">扫描进度页 · 未识别到宝宝</span>
+    <span class="phone-sub">三选项弹窗，禁止纯文字提示</span>
+    <div class="phone">
+      <div class="screen" style="padding:0;position:relative;">
+        <!-- Dimmed background -->
+        <div style="position:absolute;inset:0;background:#0008;z-index:1;border-radius:42px;"></div>
+        <!-- Blurred screen below -->
+        <div style="padding:38px 18px 20px;filter:blur(2px);">
+          <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+          <div class="nav-bar"><span></span><span class="nav-title">扫描完成</span><span></span></div>
+          <div style="text-align:center;font-size:40px;margin:20px 0;">😶</div>
+          <div style="text-align:center;font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;">未发现宝宝照片</div>
+        </div>
+        <!-- Dialog -->
+        <div style="position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:42px;">
+          <div style="background:#2c2c2e;border-radius:18px;padding:20px 18px;width:100%;">
+            <div style="font-size:14px;font-weight:800;color:#fff;text-align:center;margin-bottom:6px;">未识别到宝宝照片</div>
+            <div style="font-size:11px;color:#888;text-align:center;margin-bottom:16px;line-height:1.5;">在扫描范围内没有找到宝宝的清晰照片，可以尝试以下方式</div>
+            <div style="background:#3a3a3c;border-radius:12px;padding:12px;margin-bottom:8px;font-size:12px;color:#fff;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:18px;">👶</span>
+              <div><div style="font-weight:700;margin-bottom:2px;">调整宝宝信息</div><div style="font-size:10px;color:#888;">修改生日/年龄，重新扫描</div></div>
+              <span style="color:#6c63ff;margin-left:auto;">›</span>
+            </div>
+            <div style="background:#3a3a3c;border-radius:12px;padding:12px;margin-bottom:8px;font-size:12px;color:#fff;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:18px;">🔍</span>
+              <div><div style="font-weight:700;margin-bottom:2px;">全量扩容扫描</div><div style="font-size:10px;color:#888;">扫描全部相册，范围更大</div></div>
+              <span style="color:#6c63ff;margin-left:auto;">›</span>
+            </div>
+            <div style="background:#1a1a1a;border-radius:12px;padding:10px;font-size:12px;color:#888;text-align:center;">取消，返回上次结果</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ══ ROW 3: Results + Save ══ -->
+<div class="section-title">核心结果 · PAGE 5 Top 20 结果 / PAGE 6 保存完成</div>
+<div class="grid">
+
+  <!-- PAGE 5: Results -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 5</span>
+    <span class="phone-title">Top 20 结果页</span>
+    <span class="phone-sub">可移除/恢复，推荐理由展示</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div class="nav-bar">
+          <span class="nav-back">小豆豆 ▾</span>
+          <span class="nav-title">精选 18 张</span>
+          <span class="nav-action">新增宝宝</span>
+        </div>
+        <div class="banner">⚠ 当前仅获取部分相册，照片筛选结果可能不完整</div>
+        <div class="tag-row">
+          <div class="tag">😊 笑脸清晰</div>
+          <div class="tag">👁 眼睛睁开</div>
+          <div class="tag">✨ 画质出色</div>
+          <div class="tag">👨‍👩‍👧 亲子合影</div>
+        </div>
+        <div class="photo-grid">
+          <div class="photo-cell"><div class="photo-bg c1">👶</div><div class="photo-score">9.2</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c2">🧒</div><div class="photo-score">8.9</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c3">👶</div><div class="photo-score">8.7</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c4">🧒</div><div class="photo-score">8.5</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell removed"><div class="photo-bg c5">👶</div><div class="photo-score">8.1</div></div>
+          <div class="photo-cell"><div class="photo-bg c6">🧒</div><div class="photo-score">8.0</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c1">👶</div><div class="photo-score">7.9</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c2">🧒</div><div class="photo-score">7.8</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c3">👶</div><div class="photo-score">7.6</div><div class="photo-remove">×</div></div>
+        </div>
+        <div style="font-size:10px;color:#555;text-align:center;margin-bottom:8px;">已移除 2 张 · 点击灰色照片可恢复</div>
+        <div class="btn btn-primary">保存精选到相册</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: Results empty state -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 5</span>
+    <span class="phone-title">Top 20 结果页 · 全部移除</span>
+    <span class="phone-sub">空状态双按钮兜底</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div class="nav-bar">
+          <span class="nav-back">小豆豆 ▾</span>
+          <span class="nav-title">精选 0 张</span>
+          <span class="nav-action">新增宝宝</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;">
+          <div style="font-size:48px;">📭</div>
+          <div style="font-size:15px;font-weight:700;color:#fff;">暂无宝宝照片</div>
+          <div style="font-size:11px;color:#555;line-height:1.6;">已移除全部推荐照片<br>可以重新扫描或新增宝宝</div>
+        </div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">重新全量扫描</div>
+        <div class="btn btn-secondary">新增宝宝</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: Save success -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 6</span>
+    <span class="phone-title">保存完成页</span>
+    <span class="phone-sub">成功状态，引导查看分享</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;">
+          <div class="success-ring">✨</div>
+          <div style="font-size:20px;font-weight:800;color:#fff;">已保存 18 张</div>
+          <div style="font-size:12px;color:#888;">精选照片已存入系统相册</div>
+          <div style="background:#1a1a2e;border-radius:10px;padding:8px 16px;font-size:12px;color:#a78bfa;margin-top:4px;">📁 稚光精选</div>
+        </div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">在系统相册查看</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <div class="btn btn-secondary" style="flex:1;">分享给家人</div>
+          <div class="btn btn-secondary" style="flex:1;">新增宝宝</div>
+        </div>
+        <div class="btn-ghost">重新整理</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: Save failure -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 6</span>
+    <span class="phone-title">保存完成页 · 保存失败</span>
+    <span class="phone-sub">精细化失败分类展示</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;">
+          <div style="font-size:48px;">⚠️</div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">部分保存失败</div>
+          <div style="font-size:12px;color:#888;line-height:1.5;">15 张成功 / 3 张失败<br>可能是存储空间不足导致</div>
+          <div style="background:#f4433612;border:1px solid #f4433633;border-radius:10px;padding:10px 14px;margin-top:8px;font-size:10px;color:#f44336;line-height:1.6;text-align:left;">
+            ❌ 失败原因：手机存储空间已满<br>建议清理系统存储后重试
+          </div>
+        </div>
+        <div class="btn btn-primary" style="margin-bottom:8px;">重试失败的 3 张</div>
+        <div class="btn btn-secondary" style="margin-bottom:8px;">去系统清理存储</div>
+        <div class="btn-ghost">跳过，查看已保存的照片</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ══ ROW 4: Permission warning + multi-baby ══ -->
+<div class="section-title">附加场景 · 新增宝宝权限校验 / 多宝宝切换</div>
+<div class="grid">
+
+  <!-- Add baby permission warning -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 5</span>
+    <span class="phone-title">新增宝宝 · 权限校验弹窗</span>
+    <span class="phone-sub">部分/拒绝权限下新增宝宝前提示</span>
+    <div class="phone">
+      <div class="screen" style="padding:0;position:relative;">
+        <div style="position:absolute;inset:0;background:#0008;z-index:1;border-radius:42px;"></div>
+        <div style="padding:38px 18px 20px;filter:blur(2px);">
+          <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+          <div class="nav-bar"><span class="nav-back">小豆豆 ▾</span><span class="nav-title">精选 18 张</span><span class="nav-action">新增宝宝</span></div>
+          <div class="photo-grid" style="margin-top:30px;">
+            <div class="photo-cell"><div class="photo-bg c1">👶</div></div>
+            <div class="photo-cell"><div class="photo-bg c2">🧒</div></div>
+            <div class="photo-cell"><div class="photo-bg c3">👶</div></div>
+          </div>
+        </div>
+        <div style="position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:42px;">
+          <div style="background:#2c2c2e;border-radius:18px;padding:20px 18px;width:100%;">
+            <div style="font-size:20px;text-align:center;margin-bottom:8px;">⚠️</div>
+            <div style="font-size:14px;font-weight:800;color:#fff;text-align:center;margin-bottom:6px;">相册权限不完整</div>
+            <div style="font-size:11px;color:#888;text-align:center;margin-bottom:16px;line-height:1.5;">当前仅获得部分相册权限，新增宝宝的扫描结果会缺失部分照片，建议先开启全量权限</div>
+            <div class="btn btn-primary" style="margin-bottom:8px;font-size:12px;padding:11px;">先开启全量相册权限</div>
+            <div style="background:#3a3a3c;border-radius:12px;padding:10px;font-size:12px;color:#ccc;text-align:center;">继续新增宝宝（扫描可能不完整）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-baby switch -->
+  <div class="phone-wrap">
+    <span class="phone-label">PAGE 5</span>
+    <span class="phone-title">多宝宝切换</span>
+    <span class="phone-sub">切换时缓存筛选状态</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div class="nav-bar">
+          <span style="color:#6c63ff;font-size:14px;font-weight:700;">小豆豆 ▾</span>
+          <span class="nav-title">精选 18 张</span>
+          <span class="nav-action">新增宝宝</span>
+        </div>
+        <!-- Dropdown menu -->
+        <div style="background:#2c2c2e;border-radius:14px;padding:6px;margin-bottom:12px;">
+          <div style="padding:10px 12px;display:flex;align-items:center;gap:10px;background:#6c63ff22;border-radius:10px;margin-bottom:4px;">
+            <span style="font-size:20px;">👧</span>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">小豆豆</div><div style="font-size:10px;color:#888;">18 张精选</div></div>
+            <span style="color:#6c63ff;">✓</span>
+          </div>
+          <div style="padding:10px 12px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">👦</span>
+            <div style="flex:1;"><div style="font-size:13px;color:#ccc;">小橙子</div><div style="font-size:10px;color:#555;">20 张精选</div></div>
+          </div>
+        </div>
+        <div class="photo-grid">
+          <div class="photo-cell"><div class="photo-bg c1">👶</div><div class="photo-score">9.2</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c2">🧒</div><div class="photo-score">8.9</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c3">👶</div><div class="photo-score">8.7</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c4">🧒</div><div class="photo-score">8.5</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c5">👶</div><div class="photo-score">8.1</div><div class="photo-remove">×</div></div>
+          <div class="photo-cell"><div class="photo-bg c6">🧒</div><div class="photo-score">8.0</div><div class="photo-remove">×</div></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn btn-primary">保存精选到相册</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual upload fallback -->
+  <div class="phone-wrap">
+    <span class="phone-label">附加</span>
+    <span class="phone-title">手动上传单张</span>
+    <span class="phone-sub">拒绝权限用户的折中方案</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons">📶 🔋</div></div>
+        <div class="nav-bar">
+          <span class="nav-back">‹ 返回</span>
+          <span class="nav-title">上传照片</span>
+          <span></span>
+        </div>
+        <div style="font-size:11px;color:#555;margin-bottom:14px;">无需授权全部相册，单张上传即可使用 AI 评分</div>
+
+        <div style="background:#2c2c2e;border-radius:18px;padding:30px;text-align:center;margin-bottom:14px;border:2px dashed #3a3a3c;">
+          <div style="font-size:36px;margin-bottom:8px;">📷</div>
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">点击选择照片</div>
+          <div style="font-size:10px;color:#555;">支持从相册选择单张照片</div>
+        </div>
+
+        <div style="background:#1a1a2e;border-radius:10px;padding:10px 14px;font-size:10px;color:#6c63ff;line-height:1.6;margin-bottom:14px;">
+          💡 可多次上传，逐张添加宝宝照片<br>AI 将对每张照片单独评分并给出理由
+        </div>
+
+        <div class="spacer"></div>
+        <div class="btn btn-primary">选择照片</div>
+        <div class="btn-ghost" style="margin-top:6px;">去设置开启全相册权限（推荐）</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<div style="text-align:center;margin-top:60px;color:#222;font-size:11px;">
+  稚光 iOS MVP · 界面线框图 · v3 · 2026-06-05
+</div>
+
+</body>
+</html>
