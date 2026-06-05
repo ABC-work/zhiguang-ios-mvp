@@ -17,6 +17,7 @@ struct ToastView: View {
 // Modifier for toast presentation
 struct ToastModifier: ViewModifier {
     @Binding var message: String?
+    @State private var dismissTask: Task<Void, Never>?
 
     func body(content: Content) -> some View {
         ZStack(alignment: .bottom) {
@@ -26,9 +27,15 @@ struct ToastModifier: ViewModifier {
                     .padding(.bottom, 40)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        dismissTask?.cancel()
+                        dismissTask = Task {
+                            try? await Task.sleep(for: .seconds(2.5))
+                            guard !Task.isCancelled else { return }
                             withAnimation { message = nil }
                         }
+                    }
+                    .onDisappear {
+                        dismissTask?.cancel()
                     }
             }
         }

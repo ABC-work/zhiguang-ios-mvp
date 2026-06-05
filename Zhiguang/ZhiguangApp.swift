@@ -1,19 +1,25 @@
 import SwiftUI
 
+// MARK: - App Dependencies Container
+class AppDependencies: ObservableObject {
+    let scanStateCache = ScanStateCache()
+    let photoLibraryService: PhotoLibraryServiceProtocol = PhotoLibraryService()
+    let scoringEngine = ScoringEngine()
+    let albumSaveService: AlbumSaveServiceProtocol = AlbumSaveService()
+}
+
 @main
 struct ZhiguangApp: App {
     @StateObject private var permissionStore = PermissionStateStore()
     @StateObject private var babyProfileStore = BabyProfileStore()
-    private let scanStateCache = ScanStateCache()
-    private let photoLibraryService = PhotoLibraryService()
-    private let scoringEngine = ScoringEngine()
-    private let albumSaveService = AlbumSaveService()
+    @StateObject private var appDeps = AppDependencies()
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(permissionStore)
                 .environmentObject(babyProfileStore)
+                .environmentObject(appDeps)
                 .preferredColorScheme(.dark)
         }
     }

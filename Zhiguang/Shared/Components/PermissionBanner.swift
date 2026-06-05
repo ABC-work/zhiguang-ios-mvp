@@ -14,7 +14,11 @@ struct PermissionBanner: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
         .background(Color.yellow.opacity(0.15))
-        .overlay(Rectangle().frame(height: 2).foregroundColor(.yellow), alignment: .leading)
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .frame(width: 2)
+                .foregroundColor(.yellow)
+        }
     }
 }
 
